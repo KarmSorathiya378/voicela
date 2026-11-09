@@ -1,0 +1,16 @@
+warning: in the working copy of 'package-lock.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.marshell/tool-output/output_1794234578978_9cda0563344e620c_stdout.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.marshell/tool-output/output_1794234587522_22c0aa5fc2d5a991_stderr.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.marshell/tool-output/output_1794234605701_7c3d9b81525071fd_stderr.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.marshell/tool-output/output_1794234605701_8b6f847cf5f55c57_stdout.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.marshell/tool-output/output_1794234762952_f4f539cc4d5a2742_stdout.txt', LF will be replaced by CRLF the next time Git touches it
+error: pathspec 'scaffold' did not match any file(s) known to git
+error: pathspec 'voicela' did not match any file(s) known to git
+error: pathspec 'foundation' did not match any file(s) known to git
+error: pathspec '(next.js' did not match any file(s) known to git
+error: pathspec '16,' did not match any file(s) known to git
+error: pathspec 'tailwind' did not match any file(s) known to git
+error: pathspec '4,' did not match any file(s) known to git
+error: pathspec 'framer-motion,' did not match any file(s) known to git
+error: pathspec 'lucide)"' did not match any file(s) known to git

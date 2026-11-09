@@ -1,0 +1,378 @@
+VOICE AI — INTERACTIVE WEBSITE DESIGN SYSTEM & IMPLEMENTATION SPECIFICATION
+Version: 1.0
+Date: 9 November 2026
+Status: Design specification for Marshell implementation
+Product name: Working placeholder VOICE AI — replace globally once brand is selected. Do not use VoiceOS as the product name.
+Scope: Marketing website, browser-based interactive demonstrations, responsive pages, waitlist, pricing presentation, and production quality standards. Desktop/mobile applications are future products, represented by honest previews only.
+0. Executive design directive
+Build a distinctive, premium, interactive website for a voice-driven AI operating layer. The website should feel like a beautifully engineered product, not an AI-generated landing-page template. It must explain the value in seconds and let visitors experience it in a controlled, transparent simulation. The first release is a working website, not a real OS-controlling browser agent.
+
+The desired experience: restrained editorial typography + immersive software visualization + precise, responsive interaction. Every motion should have a reason: communicate listening, understanding, planning, acting, or completion. Prioritize usability and performance over visual spectacle.
+
+Non-negotiables: no copied VoiceOS identity/layout/assets; no random gradients or glowing orbs everywhere; no generic three-card feature grids as the core storytelling device; no fake metrics, testimonials, customer logos, or download buttons; no pretend device automation; no automatically activated microphone; no dark patterns. Never represent a sandbox as access to a user's actual apps.
+1. Research references and observed lessons
+Research performed from the public websites on 9 November 2026. These are conceptual references, not permission to copy designs.
+Site	URL	Observed strength	Translate into original design
+VoiceOS	https://www.voiceos.com/	Screen-context narrative, voice-to-action messaging, recognizable app workflows, product-led storytelling	Let people understand voice-to-action with real-looking task states and clear explanations
+VoiceOS browser demo	https://www.voiceos.com/demo	Simulated desktop, sample apps, hold-Space voice interaction, prewritten tasks; explicit sandbox disclosure	Build our own more expressive sandbox, with typing as first-class input and full replay/reset
+Linear	https://linear.app/	Product-first narrative, sharp typography, realistic interface detail, disciplined hierarchy	Use credible, dense software details with spacious composition
+Raycast	https://www.raycast.com/	Keyboard-first speed, tangible integrations, command-centered interaction	Make command entry immediate and delightful
+Framer	https://www.framer.com/	Editable canvas imagery, strong responsive visual presentation	Build responsive composition and genuine interactions rather than ornamental motion
+Stripe	https://stripe.com/	Clear complex-product explanations, strong information hierarchy	Make pricing, privacy, and capability explanations legible
+Apple MacBook Pro	https://www.apple.com/macbook-pro/	Large product-centric imagery, deliberate pacing and concise claims	Use restrained cinematic reveals and crisp device visuals
+
+
+Research limitations: page content and public structure were inspected. Browser-only animation details, precise timing, hover behavior, and motion choreography were not independently measured; the interaction specs below are original design proposals, not claims about exact implementations on reference sites.
+2. Brand positioning
+- Category: voice-driven AI operating layer, not a new operating system.
+- Promise: Speak naturally. See the work happen.
+- Brand personality: calm, capable, precise, quietly futuristic, accessible, human-centered.
+- Brand voice: confident, short sentences, plain English, no unverified productivity claims.
+- Audience: students, creators, professionals, developers, people who prefer hands-free workflows.
+- Differentiator on the website: unusually clear, playable demonstrations with visible permissions and task steps.
+- Name, logo, and domain are pending. Build all brand strings from configuration; never hard-code VoiceOS branding.
+3. Creative concept — 'INTENT BECOMES ACTION'
+The core visual motif is a single continuous command thread. A spoken phrase appears as text, resolves into a short sequence of actions, then lands in a real-looking result. The same thread visually connects hero, demo, feature storytelling, and final CTA. It must never resemble an animated neural-network wallpaper.
+
+Use an original 'signal ribbon' identity: one thin line that reacts to microphone amplitude in the demo, then simplifies into a progress line while tasks execute. At rest it is nearly invisible. No generic luminous spheres, sci-fi HUD, holographic grids, or oversized AI sparkles.
+Hero composition
+Desktop (1440 px reference): navigation at top; left 42% editorial headline and compact CTAs; right 58% immersive software stage with layered window depth. Below fold, the stage expands into an interactive desktop. The primary object is the product UI, not a decorative 3D shape.
+
+Headline option A: Say what you need. Watch it happen.
+Subheadline: A voice-first assistant for the work happening across your apps. Explore how it works in an interactive demo.
+Primary CTA: Try the interactive demo
+Secondary CTA: Explore the product
+
+Do not claim Windows/macOS/Linux/mobile versions are downloadable until actual signed builds are ready. Use 'Join the launch list' for unavailable platforms.
+4. Visual language and tokens
+Color
+Default: warm off-white canvas, near-black text, restrained cool-blue interactive accent. Dark sections are used to create contrast, not as the entire page aesthetic.
+Token	Value	Usage
+--canvas	#F5F5F2	Main light background
+--paper	#FFFFFF	Demo panels and inset surfaces
+--ink	#17191C	Primary text
+--muted	#6B7078	Secondary text
+--hairline	#D9DCDF	Fine dividers
+--accent	#3869DC	Active actions, focus, progress
+--accent-soft	#EAF0FF	Selected command backgrounds
+--night	#111318	Immersive demo section
+--night-surface	#1B1E25	Dark panels
+--night-text	#F7F7F5	Dark-section headings
+--success	#237A57	Verified successful demo actions
+--warning	#A46D23	Caution/confirmation states
+--error	#B54A4A	Failure states
+
+
+These are starting tokens. Verify contrast, especially muted text, focus states, and blue on pale surfaces. Never use color alone to convey status.
+Typography
+- Use a licensed/available modern sans family, e.g. Geist or Inter, self-hosted when permitted. No redistributing fonts.
+- H1 desktop: clamp(3.8rem, 6vw, 6.75rem), weight 550–650, tight tracking, line-height ~0.98–1.06.
+- H1 mobile: clamp(2.6rem, 11vw, 4.2rem).
+- H2 desktop: clamp(2.5rem, 4vw, 4.5rem), line-height 1.05–1.15.
+- Body: 16–18px, line-height 1.5–1.65.
+- Labels: 12–13px, medium weight, restrained uppercase only where semantically appropriate.
+- Product UI: 13–15px with high legibility; monospace only for keyboard shortcuts, timestamps, and technical data.
+- Keep measure ~55–72 characters for reading paragraphs.
+Layout
+- Max editorial width: 1240px; wide demo stage: up to 1440px.
+- Page gutters: desktop 48–72px; tablet 28–40px; mobile 18–24px.
+- Vertical section spacing: desktop 120–176px; mobile 72–104px.
+- Grid: 12 columns desktop, 8 tablet, 4 mobile; do not force cards into every grid.
+- Corner radius: buttons 10–12px, panels 14–18px, large demo stage 22–26px.
+- Borders: 1px subtle; shadows soft and realistic, not glowing.
+- Use negative space deliberately. Align typography to product imagery and avoid arbitrary offset decoration.
+5. Information architecture
+Public pages:
+1. / — Homepage, hero and guided product storytelling.
+2. /demo — Full-screen interactive sandbox with scenario selector.
+3. /features/voice-actions — Explain task orchestration with playable examples.
+4. /features/dictation — Voice typing and editing comparison.
+5. /features/screen-context — Permission-based contextual assistance.
+6. /platforms — Windows, macOS, Linux, Android, iOS availability matrix.
+7. /pricing — Honest ₹1 desktop pricing proposal and any future plans; clarify billing interval before checkout.
+8. /privacy — Plain-language privacy practices, permissions, data handling.
+9. /faq — Product limitations, demo disclosure, integrations, device support.
+10. /updates — Genuine changelog only after releases.
+11. /waitlist — Signup with explicit consent and verification.
+12. /legal/terms and /legal/privacy — Reviewed legal content before launch.
+Navigation: Product (mega menu only if necessary), Interactive Demo, Platforms, Pricing; right CTA 'Try demo'. On mobile, accessible sheet menu, keyboard and screen-reader support, no scroll lock bugs.
+6. Homepage — detailed storyboard
+Section 01 — Navigation
+At top: compact logo/wordmark left; Product, Demo, Platforms, Pricing center/right; quiet bordered 'Try demo' button. Transparent over hero only if text remains legible; on scroll, transition to a solid surface with subtle divider. Height 72px desktop, 64px mobile. Sticky but not distracting. Never obscure anchor destinations.
+Section 02 — Hero / the first 8 seconds
+Purpose: visitors understand what the product is and why they should interact.
+- Entrance: headline reveals in two short lines over ~500ms; demo stage enters with a small 12px vertical offset and opacity transition.
+- Demo stage initially shows an original abstract desktop workspace with mail, calendar, notes, and files. No copied macOS/Windows desktop chrome; use generic recognizable conventions.
+- A command bar anchored to the workspace: 'Ask your device to…' with visible keyboard focus.
+- Rotate through three authored example prompts only when idle, pausing on hover/focus and under reduced-motion settings.
+- Primary CTA scrolls/focuses the demo; secondary CTA opens product explainer.
+- Provide a subtle 'Interactive preview — no accounts connected' label.
+- Above-the-fold desktop must show headline, CTA and a meaningful slice of product stage without scrolling.
+- On mobile: headline first, then simplified stage with one scenario; do not squash desktop windows into illegible miniatures.
+Section 03 — Proof by interaction
+Full-width dark demo stage. A sticky left column explains three moments: Ask → Review → Done. Right stage transitions between authored application states based on scroll and/or explicit step controls. Scrolling must never steal wheel input from focused demo controls. Each step is independently clickable; avoid forced scroll-jacking.
+Section 04 — Voice-to-action vs voice-to-text
+Split-screen comparison: left shows raw transcript entering a text field; right shows a request producing a drafted email, selected recipient and approval step. Visitor toggles between 'Dictate' and 'Take action'. Explain that the demo is scripted, not connected to real accounts.
+Section 05 — Point to context
+Large simulated document/email canvas. Visitor clicks a paragraph, chart or item; a thin focus ring highlights selection. A command entry reads 'Summarize this' or 'Draft a reply about this'. The assistant preview cites selected text in its result. No screen capture of the visitor's actual device.
+Section 06 — Connected workflows
+One continuous visual route through three mock apps, e.g. Inbox → Calendar → Notes. Animate only the relevant active window and task line; show a compact action log with step labels. No floating brand logo soup.
+Section 07 — Desktop to mobile story
+Side-by-side desktop and phone preview. A staged task begins on desktop and is shown as a synced draft on mobile. Label as a future product preview until cross-device sync exists. Never suggest a powered-off phone can be remotely booted by a normal app.
+Section 08 — Privacy and control
+Interactive permission panel with toggles for Microphone, Screen Context, Connected Apps, History. Toggling shows explanatory changes in the demo only, not actual browser permissions. A 'Stop task' control remains visible during running states. No invented security certifications or unimplemented promises.
+Section 09 — Platform availability
+Five platform rows: Windows, macOS, Linux, Android, iOS. Each uses truthful states: 'Planned', 'In development', 'Beta', or 'Available', controlled from a central release configuration. Only 'Available' exposes real download links.
+Section 10 — Pricing story
+Make the ₹1 ambition prominent but precise: 'Desktop launch price: ₹1' only once interval, eligibility, taxes, payment processing and entitlement are confirmed. Until then label 'Proposed launch pricing — details to be announced'. Separate usage-based AI costs from app access if necessary. Never suggest unlimited hosted AI for ₹1 without a sustainable cost model.
+Section 11 — FAQ
+Concise accordion, keyboard accessible. Questions: Is this an OS replacement? Does the demo use real accounts? Can I use it offline? Which devices are supported? What does ₹1 include? Does the mobile app run when the phone is off? What data is stored? Are there confirmations before sending/deleting?
+Section 12 — Closing CTA and footer
+Final oversized statement: Less navigating. More doing. One prominent 'Try the demo' CTA and optional 'Join launch list'. Footer: Product, Company, Resources, Legal, Contact. Do not invent social links.
+7. The demo laboratory — primary differentiator
+Route: /demo. Must feel like a standalone miniature product. The demo is entirely sandboxed: all people, files, emails, calendar events and notes are fictional and local to the demonstration. It cannot access user apps or perform real external actions.
+Layout
+- Header: logo, 'Interactive sandbox' status, reset, help, exit.
+- Left rail: scenario list (desktop) or dropdown/sheet (mobile).
+- Main area: responsive simulated desktop or phone.
+- Right contextual rail: agent activity timeline, current step, approvals and result; collapsible on smaller screens.
+- Bottom floating command bar: text input, sample prompts, optional push-to-talk, clear stop control.
+- Small persistent disclosure: 'Simulated environment. No real accounts connected.'
+Seven required scenarios
+Demo A — Send an email
+Input: 'Draft an email to Maya asking whether Tuesday works.'
+Stages: interpret recipient → open fictional mail → create draft → display preview → request approval to simulate send → show simulated completion. Never send a real email.
+
+Demo B — Schedule a meeting
+Input: 'Put a 30-minute product review on my calendar tomorrow at 2.'
+Stages: parse date → show fictional calendar → detect an authored conflict or available slot → review event → simulate creation.
+
+Demo C — Find a document
+Input: 'Find the Q3 launch notes.'
+Stages: search mock files → rank results → open correct document → highlight matching context. Include no-results behavior.
+
+Demo D — Dictate and polish
+Input: sample spoken or typed raw notes.
+Stages: raw text → polish preview → toggle Raw / Light / Polished → accept or undo. Do not alter names, numbers, or intent silently.
+
+Demo E — Screen context
+Input: select a fictional paragraph and ask 'What does this mean?'
+Stages: highlight selected area → show what context was used → concise answer → clear selection. Make provenance visible.
+
+Demo F — Multi-app workflow
+Input: 'Summarize the launch notes and draft an update for the team.'
+Stages: retrieve mock note → summarize → open mock message composer → draft → require approval. Progress line spans all steps.
+
+Demo G — Mobile assistant preview
+Input: 'Remind me about the meeting and prepare a reply.'
+Stages: phone mockup → notification preview → task details → review draft. Label clearly as planned/mobile concept.
+Interaction engine
+- Use an explicit finite-state machine: idle, input, interpreting, planning, executing, awaiting_approval, completed, failed, cancelled.
+- Each scenario is declarative JSON: ID, supported sample prompts, timeline steps, mock app data, timing presets, expected result and recoverable errors.
+- Real typing must be accepted. For unsupported free-form requests, respond transparently with suggested supported demos; do not pretend an arbitrary request was executed.
+- Enter submits when input is focused; Escape cancels or closes the active overlay; Space for optional push-to-talk only when the demo stage is focused and no editable element has focus. Never intercept normal page scrolling or typing.
+- Microphone is opt-in. Request browser permission only on explicit click. Show active recording indicator and stop. If speech recognition unsupported/denied, typed demo must remain fully usable.
+- Include replay, restart scenario, skip animation, pause and resume where appropriate.
+- Approval controls: 'Approve simulation' and 'Cancel'; clearly state no real-world action occurs.
+- Timeouts and failure recovery: if an animation hangs, show Retry/Reset rather than an infinite spinner.
+- Respect reduced motion and low-power devices.
+Scenario fidelity requirements
+Mock windows must have coherent visual detail: consistent spacing, realistic document contents, working tabs, interactive controls that matter, empty states, focused states, and clear selected items. A believable simulation is more persuasive than flashy animation.
+
+Do not embed screenshots of third-party apps as a substitute for functioning demo UI. Build original fictional app shells and use licensed icons only.
+8. Motion design specification
+Motion vocabulary
+1. Reveal: opacity + translateY(8–16px), 350–550ms.
+2. Focus: 150–220ms border and background transition.
+3. Listen: subtle signal ribbon amplitude; no flashing or high-frequency strobe.
+4. Interpret: transcript text settles into a concise intent chip, 220–360ms.
+5. Act: active mock window gains focus, timeline advances; 300–500ms.
+6. Complete: understated check and settled result, 200–300ms.
+7. Transition: shared-element movement only where spatial continuity helps.
+Use spring motion sparingly; avoid elastic bounce for professional workflows. Stagger no more than 3–4 meaningful elements per scene. All animated actions must be cancellable or skippable.
+Scroll choreography
+Use IntersectionObserver for section activation and CSS transforms for simple reveals. Use Framer Motion / Motion for React for state transitions. GSAP only if a particular complex timeline demonstrably requires it. Avoid giant canvas effects, permanent WebGL loops, scroll hijacking and heavyweight video as essential content.
+Reduced motion
+When prefers-reduced-motion: reduce, remove parallax, nonessential movement, and auto-cycling. Preserve immediate state changes and meaningful progress text.
+9. Component inventory
+Build reusable, accessible components:
+- SiteHeader, MobileNavigation, PrimaryCTA, SectionIntro, EditorialSplit, FeatureNarrative, PlatformStatus, PricingDisclosure, FAQAccordion, Footer.
+- DemoShell, MockDesktop, MockMobile, MockWindow, MockAppDock, CommandBar, TranscriptPreview, SignalRibbon, AgentTimeline, ApprovalPanel, TaskResult, ScenarioPicker, DemoDisclosure, DemoReset.
+- MockMail, MockCalendar, MockFiles, MockNotes, MockMessages.
+- PermissionExplainer, PrivacyToggleDemo, AvailabilityBadge, WaitlistForm, Toast, ErrorBoundary, Skeleton.
+Each component needs documented props, keyboard behavior, responsive variants, empty/loading/error states, and a visual regression story.
+10. Responsive rules
+>= 1280px: full hero split; demo desktop with right activity panel; cinematic editorial layouts.
+1024–1279px: reduce stage depth and widths, preserve all controls.
+768–1023px: stack some narratives, activity panel becomes drawer.
+390–767px: mobile-first navigation, readable type, single active mock window, bottom command composer, scenario switcher.
+320–389px: prevent horizontal overflow, shrink chrome not text, maintain touch targets >= 44x44px.
+
+Mobile website must not require hover. On narrow screens, offer a dedicated mobile demo rather than miniature desktop controls.
+11. Copywriting and trust
+Tone: clear, precise, useful. Avoid phrases like 'revolutionary', '10x productivity', 'does everything', 'works with every app', unless independently substantiated. Every feature statement must map to one of: Demo simulation, Planned, In beta, Available.
+
+Suggested copy:
+- Hero: 'Say what you need. Watch it happen.'
+- Demo introduction: 'Don't imagine the workflow. Try it.'
+- Context section: 'Point to the part that matters.'
+- Automation section: 'One request. Several steps. Your approval.'
+- Privacy section: 'You decide what the assistant can access.'
+- Final CTA: 'The next action starts with a sentence.'
+Always label mock data and planned features. Do not fabricate social proof or performance benchmarks.
+12. Accessibility
+Target WCAG 2.2 AA. Semantic HTML, visible focus indicators, keyboard-complete navigation, ARIA live regions for task status without announcing every animated frame, properly labeled input, captioned demo videos, sufficient contrast, no motion-only communication, no audio autoplay, responsive text scaling to 200%, correct dialog focus trapping and restoration. Test screen reader flow for scenario selection and approval.
+13. Performance budgets
+- Core Web Vitals targets at p75 field data: LCP <= 2.5s, INP <= 200ms, CLS <= 0.1.
+- Initial route JS budget target: <= 180KB gzip for core client interactivity where feasible; load demo engine on demand.
+- Hero critical image optimized with AVIF/WebP and sensible responsive sizes.
+- Prefer CSS and SVG for signal ribbon; only use Canvas/WebGL if profiling justifies it.
+- No blocking external font requests. Lazy-load below-fold images and demo scenarios.
+- Avoid scroll-linked JavaScript layout thrashing; use transform/opacity.
+- Provide a static, functional fallback if advanced animations fail.
+14. Technology recommendation
+- Next.js App Router + TypeScript, React, Tailwind CSS (tokens-first) and CSS custom properties.
+- Motion for React for component transitions; avoid multiple competing animation systems.
+- XState or a small typed reducer for deterministic demo scenarios.
+- Zod for scenario schema validation.
+- Storybook for UI states; Playwright for browser E2E; Vitest for state logic.
+- Analytics with privacy-conscious, consent-respecting event collection.
+- Waitlist via a secure server action/API with validation, rate limiting, bot protection and double opt-in where appropriate.
+- Content and release status from structured configuration, not hard-coded page copy.
+15. Security and privacy requirements
+- Browser demo operates on fictional local data; never asks for Gmail, contacts, file system or calendar permissions.
+- Microphone permission only on explicit interaction; show capture status and allow immediate stop.
+- Do not store raw microphone audio by default; clearly disclose any browser speech-service processing.
+- No secret API keys in client bundles.
+- Sanitize all displayed user input; strong Content Security Policy; secure headers; dependency review.
+- Server-side validation and abuse controls on waitlist.
+- Keep analytics free of raw speech/transcripts and sensitive demo inputs.
+- Explicit consent for email marketing; easy unsubscribe.
+16. Pricing page requirements
+The proposed ₹1 PC price must not be presented ambiguously. Decide: ₹1 one-time, ₹1/month, or promotional access. Explain taxes, included AI usage, potential rate limits, paid add-ons, refund policy, supported devices, and renewal. Until validated, use '₹1 launch pricing under consideration'. Mobile price is undecided; do not invent it.
+17. Platform and future mobile claims
+Website roadmap: site first → Windows → macOS → Linux → Android → iOS. The platform page is informational until apps exist. Background microphone behavior, wake-word support and automation differ by OS and may be restricted. A fully powered-off phone generally cannot be turned on remotely by a normal third-party application; do not advertise that capability. Use honest supported-state matrices.
+18. SEO and discoverability
+Unique metadata per route; descriptive titles; Open Graph images; sitemap; robots; structured data where eligible; accessible headings; canonical URLs; meaningful alt text. Target natural queries around voice assistant for desktop, AI voice automation, dictation, screen-aware assistant, but avoid misleading claims and competitor impersonation.
+19. Analytics events
+Collect aggregate privacy-conscious events: hero_demo_click, demo_open, scenario_select, scenario_start, scenario_complete, scenario_cancel, demo_reset, mic_permission_request, mic_permission_denied, waitlist_submit, platform_interest, pricing_view. Do not log transcripts or typed private content. Instrument funnel and drop-off without intrusive tracking.
+20. Quality acceptance criteria
+Homepage: value proposition understood without scrolling; no broken links; responsive at 320px–4K; no horizontal overflow; LCP/INP/CLS targets; CTA works.
+
+Demo: all seven scenarios run deterministically; meaningful typed interaction; unsupported prompts handled honestly; keyboard navigation; cancellation and replay; explicit simulation label; no real external actions; microphone optional and revocable.
+
+Visual: consistent typography, spacing, borders and radii; no fake application logos; no generic AI template sections; coherent original identity; no arbitrary gradients.
+
+Accessibility: keyboard-only usable, screen reader tested, contrast and reduced motion supported, dialogs properly managed.
+
+Trust: no fabricated testimonials, downloads, pricing details, or unsupported OS capabilities.
+
+Engineering: CI checks pass, unit/E2E tests pass, visual regression reviewed, security review completed, production build deploys.
+21. Marshell agent orchestration
+Use Marshell's main agent as the integrator and eight specialist agents:
+1. Creative Direction: brand identity, layout composition, typography and design tokens.
+2. Frontend Architecture: Next.js routing, shared components, responsive architecture.
+3. Motion Engineering: transitions, scroll behavior, signal ribbon and reduced motion.
+4. Demo Simulation: scenario data, finite-state machine, mock apps, approvals.
+5. Content & SEO: messaging, product claims, pages, metadata.
+6. Backend & Waitlist: signup flow, validation, email verification, analytics.
+7. Accessibility & Performance: WCAG audit, responsive testing, profiling.
+8. QA & Security: unit/E2E tests, visual regression, permissions and threat review.
+Main agent responsibilities: establish repo conventions, resolve design and code conflicts, enforce design system, run integration tests, review output, maintain release checklist. Each agent works in isolated branches/worktrees or assigned files with clear ownership. Do not allow parallel agents to overwrite the same components.
+22. Build milestones
+Milestone A — Design foundation
+Deliver brand placeholder system, sitemap, moodboard, typography, tokens, low-fi wireframes, and 3 polished hero variants. Choose one based on clarity and originality; do not implement all variants into production.
+Milestone B — Homepage shell
+Implement navigation, hero, product stage, editorial feature sections, footer, mobile layout. All CTAs functional; no dead placeholders.
+Milestone C — Demo engine
+Implement typed scenario schema and core finite-state machine; build MockMail, MockCalendar, MockFiles, MockNotes and MockMessages. Deliver Demos A–C fully functioning before expanding.
+Milestone D — All scenarios and motion
+Complete Demos D–G, approvals, transcript behavior, optional mic, animation and error states.
+Milestone E — Conversion pages
+Pricing, platforms, FAQ, privacy, waitlist, email verification, SEO, analytics.
+Milestone F — Production polish
+Performance and accessibility passes, cross-browser/mobile tests, legal copy review, security checks, visual regression, deploy.
+23. Recommended project structure
+src/
+  app/
+    (marketing)/page.tsx
+    demo/page.tsx
+    platforms/page.tsx
+    pricing/page.tsx
+    privacy/page.tsx
+    faq/page.tsx
+    waitlist/page.tsx
+    features/[slug]/page.tsx
+  components/
+    site/
+    editorial/
+    demo/
+    mock-apps/
+    primitives/
+  demo/
+    engine/
+    scenarios/
+    fixtures/
+    types/
+  config/
+    brand.ts
+    platform-status.ts
+    pricing.ts
+  styles/
+    tokens.css
+    globals.css
+  lib/
+    analytics/
+    validation/
+    accessibility/
+  tests/
+    e2e/
+    unit/
+    visual/
+24. Implementation instructions for Marshell
+1. Read this file and the master product PRD. Treat this design spec as authoritative for the website, and the product PRD as authoritative for platform roadmap.
+2. Inspect existing workspace; do not delete existing code or alter unrelated Marshell project files.
+3. Create a feature checklist and map every feature to a page, component, agent and test.
+4. Begin with the visual foundation and a real working hero, not a generic landing page generated in one pass.
+5. Implement functional sandbox behavior before decorative motion.
+6. Build and test responsive and reduced-motion variants as components are created.
+7. Every CTA must lead to a real route or clearly disabled/planned state.
+8. Take screenshots at desktop, tablet and mobile widths; review spacing, visual rhythm and typography.
+9. Test all seven demo scenarios including unsupported commands and cancellation.
+10. Do not claim production completion without running build, lint, typecheck, tests, accessibility and performance checks.
+25. Explicit anti-pattern checklist
+Reject implementations with:
+- Gradient blobs behind every section.
+- Repeated glass cards with generic icons and stock copy.
+- Neon blue/purple 'AI' effects, excessive glowing borders or random particles.
+- Fake chat responses for arbitrary prompts with no scenario support.
+- Scroll-jacking, motion sickness, forced autoplay or loud sound.
+- Unreadably tiny simulated apps on mobile.
+- Download buttons pointing nowhere.
+- Invented app support, pricing commitments or security claims.
+- Mock windows that cannot be interacted with.
+- Mic recording before user consent.
+- Copying VoiceOS's branding, UI assets, sample names, or exact layout.
+26. Final design review rubric
+Score each category 1–5 and require >=4 before launch:
+- Originality and brand distinction.
+- Immediate comprehension of product value.
+- Demo realism and functional depth.
+- Visual hierarchy and typographic quality.
+- Motion quality and purpose.
+- Mobile usability.
+- Accessibility.
+- Performance.
+- Trustworthiness of claims.
+- Conversion clarity.
+A beautiful website that fails the demo or misleads users does not pass.
+Source URLs reviewed
+- https://www.voiceos.com/
+- https://www.voiceos.com/demo
+- https://www.voiceos.com/blog/how-voiceos-is-building-the-voice-operating-system
+- https://linear.app/
+- https://www.raycast.com/
+- https://www.framer.com/
+- https://stripe.com/
+- https://www.apple.com/macbook-pro/
+End of design specification.

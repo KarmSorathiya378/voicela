@@ -17,7 +17,7 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
       <div
         ref={ref}
         className={cn(
-          "divide-y divide-border border-y border-border",
+          "v-hairline divide-y divide-border border-y",
           className,
         )}
         {...props}

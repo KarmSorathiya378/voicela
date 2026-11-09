@@ -73,7 +73,7 @@ export default function Navbar() {
     }
   }
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background">
+    <header className="sticky top-0 z-50 v-hairline border-b bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-5 focus:top-3 focus:z-50 focus:bg-background focus:p-3"
@@ -84,11 +84,19 @@ export default function Navbar() {
         <Link
           href="/"
           aria-label="Voicela home"
-          className="flex min-h-11 items-center gap-2.5 text-xl font-semibold tracking-[-0.04em]"
+          className="group flex min-h-11 items-center gap-2.5 text-xl font-semibold tracking-[-0.04em]"
         >
-          <AudioLines aria-hidden="true" size={25} strokeWidth={1.7} />
+          <AudioLines
+            aria-hidden="true"
+            size={25}
+            strokeWidth={1.7}
+            className="transition-transform duration-200 group-hover:-rotate-6"
+          />
           voicela
-          <span aria-hidden="true" className="text-accent">
+          <span
+            aria-hidden="true"
+            className="inline-block text-accent transition-transform duration-200 group-hover:scale-125"
+          >
             .
           </span>
         </Link>
@@ -101,9 +109,13 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               aria-current={pathname === link.href ? "page" : undefined}
-              className="inline-flex min-h-11 items-center text-xs font-medium text-muted-foreground transition-colors hover:text-foreground aria-[current=page]:text-foreground"
+              className="group relative inline-flex min-h-11 items-center text-xs font-medium text-muted-foreground transition-colors hover:text-foreground aria-[current=page]:text-foreground"
             >
               {link.label}
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-0 -bottom-px h-px origin-left scale-x-0 bg-foreground transition-transform duration-200 group-hover:scale-x-100 aria-[current=page]:scale-x-100"
+              />
             </Link>
           ))}
         </nav>

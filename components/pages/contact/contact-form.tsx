@@ -14,10 +14,12 @@ type Errors = Partial<Record<keyof Message, string>>;
 export function ContactForm() {
   const [errors, setErrors] = useState<Errors>({});
   const [preview, setPreview] = useState<Message | null>(null);
+  const [ready, setReady] = useState(false);
   const status = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     track(EVENTS.PAGE_VIEW, { page: "contact" });
+    queueMicrotask(() => setReady(true));
   }, []);
 
   useEffect(() => {
@@ -50,6 +52,8 @@ export function ContactForm() {
 
   return (
     <form onSubmit={submit} noValidate aria-label="Contact message preview" className="space-y-6" onInput={() => setPreview(null)}>
+      <fieldset disabled={!ready} className="min-w-0 space-y-6">
+      <legend className="sr-only">Your message</legend>
       <Field label="Name" htmlFor="contact-name" required error={errors.name}>
         <Input id="contact-name" name="name" autoComplete="name" required maxLength={100} aria-invalid={!!errors.name} aria-describedby={errors.name ? "contact-name-error" : undefined} />
       </Field>
@@ -60,6 +64,7 @@ export function ContactForm() {
         <Textarea id="contact-message" name="message" rows={6} required maxLength={5000} aria-invalid={!!errors.message} aria-describedby={`contact-message-description${errors.message ? " contact-message-error" : ""}`} />
       </Field>
       <Button type="submit" className="w-full sm:w-auto">Preview message</Button>
+      </fieldset>
       <noscript><p className="text-sm text-muted-foreground">Enable JavaScript to preview a message. This form has no email delivery service.</p></noscript>
       <div role="status" aria-live="polite" aria-atomic="true">
         {preview && (

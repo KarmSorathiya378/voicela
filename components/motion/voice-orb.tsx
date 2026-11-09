@@ -26,6 +26,7 @@ export function AnimatedVoiceOrb({
       {...props}
       className={cn(
         "relative inline-flex max-w-full items-center justify-center text-accent",
+        !reduce && level < 0.01 && "v-orb-idle",
         className,
       )}
       style={{ width: size, aspectRatio: "1", ...style }}

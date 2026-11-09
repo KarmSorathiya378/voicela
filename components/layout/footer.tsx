@@ -91,10 +91,13 @@ export default function Footer() {
             </Field>
             <p
               id="footer-waitlist-note"
-              className="mt-3 text-xs leading-relaxed text-muted-foreground"
+              className="mt-3 text-[0.8rem] leading-relaxed text-muted-foreground"
             >
               Waitlist preview only. Email is not stored or sent. Read our{" "}
-              <Link href="/privacy" className="underline">
+              <Link
+                href="/privacy"
+                className="underline underline-offset-2 hover:text-foreground"
+              >
                 privacy policy
               </Link>
               .
