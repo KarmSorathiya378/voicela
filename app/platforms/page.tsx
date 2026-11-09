@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
@@ -48,14 +49,17 @@ export default function PlatformsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-1 flex-col items-start gap-6">
-                  <img
-                    src={`/images/platform-${platform.slug}.svg`}
-                    alt={`Voicela on ${platform.name} — platform tile`}
-                    width={640}
-                    height={480}
-                    loading="lazy"
-                    className="w-full rounded-lg border border-border"
-                  />
+                  <div className="w-full overflow-hidden rounded-lg border border-border">
+                    <Image
+                      src={`/images/platform-${platform.slug}.png`}
+                      alt={`Voicela on ${platform.name} — platform tile`}
+                      width={960}
+                      height={720}
+                      loading="lazy"
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      className="aspect-[4/3] w-full object-cover"
+                    />
+                  </div>
                   <p className="flex-1 leading-relaxed">{platform.summary}</p>
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/platforms/${platform.slug}`}>

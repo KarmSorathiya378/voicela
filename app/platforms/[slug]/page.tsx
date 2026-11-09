@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
@@ -44,6 +45,16 @@ export default async function PlatformPage({ params }: Props) {
             <h1 className="v-display max-w-4xl text-balance">Voicela for {platform.name}.</h1>
             <div className="mt-6"><Badge variant={windows ? "accent" : "outline"} dot>{platform.status}</Badge></div>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">{platform.overview}</p>
+            <div className="mt-8 max-w-2xl overflow-hidden rounded-2xl border border-border">
+              <Image
+                src={`/images/platform-${platform.slug}.png`}
+                alt={`Voicela on ${platform.name} — platform tile`}
+                width={960}
+                height={720}
+                priority
+                className="aspect-[4/3] w-full object-cover"
+              />
+            </div>
           </Reveal>
         </Container>
         <Section aria-label={`${platform.name} roadmap and availability`}>
