@@ -1,0 +1,6 @@
+﻿Audience: people who want fewer manual steps across their desktop, with explicit control.
+Idea: Voicela's proposed ₹1 entry point becomes a small first step into a visible, reversible command path.
+Live thing: a request moves through a reviewable workflow; context and privacy controls explain its boundaries.
+Argument: intent is enough (sample command); input is optional (typed fallback); actions are inspectable (timeline); apps connect (mock workspace); context is scoped (selection); text differs from action (comparison); platform readiness varies (status rail); permissions are explicit (data path switches); pricing is provisional (undecided terms); doubts have answers (FAQ); users can register interest (waitlist).
+Direction: sentence-as-layout, seed 1061451020. Product interface replaces photography because the PRD specifically requires product visualization and no generic AI imagery. Shared design system supplies palette/type. PRD-required Accordion overrides dealt open FAQ; sparse motion overrides skill animation-count minimum for above-fold performance.
+All names, documents, emails and calendar entries are marked sample data. No testimonials, adoption counts, performance benchmarks or launch dates are invented.
