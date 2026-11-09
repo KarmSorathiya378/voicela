@@ -1,5 +1,5 @@
 "use client";
-import { useId, type CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 import { useReducedMotion } from "./use-motion";
 
@@ -30,7 +30,6 @@ export function SignalRibbon({
   className,
   style,
 }: SignalRibbonProps) {
-  const id = useId();
   const reduce = useReducedMotion();
   const level = Number.isFinite(activity)
     ? Math.min(1, Math.max(0, activity))
@@ -48,16 +47,14 @@ export function SignalRibbon({
         className,
       )}
       role="img"
-      aria-labelledby={id}
+      aria-label={`${label}: ${
+        executing
+          ? `${Math.round(value * 100)}%`
+          : `${Math.round(level * 100)}%`
+      }`}
       style={style}
     >
       <svg className="v-signal-svg" viewBox="0 0 320 24" fill="none">
-        <title id={id}>
-          {label}:{" "}
-          {executing
-            ? `${Math.round(value * 100)}%`
-            : `${Math.round(level * 100)}%`}
-        </title>
         {/* quiet baseline hairline */}
         <line
           x1="0"

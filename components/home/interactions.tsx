@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
   motion,
@@ -23,6 +23,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { AnimatedVoiceOrb } from "@/components/motion/voice-orb";
+import { SignalRibbon } from "@/components/motion/signal-ribbon";
 import { Button } from "@/components/ui/button";
 import { track, EVENTS } from "@/lib/metrics";
 import { submitWaitlist, type Platform } from "@/lib/waitlist";
@@ -49,44 +50,81 @@ export function HeroActions() {
 export function HeroInstrument() {
   const reduced = useReducedMotion();
   const [activity, setActivity] = useState(0.2);
+  const [active, setActive] = useState(false);
+  const [progress, setProgress] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
+  const taskTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
   });
   const y = useTransform(scrollYProgress, [0, 1], [12, -12]);
+  const runTask = useCallback(() => {
+    if (reduced || active) return;
+    setActive(true);
+    setProgress(0);
+    const start = performance.now();
+    const duration = 1400;
+    const tick = () => {
+      const t = Math.min(1, (performance.now() - start) / duration);
+      setProgress(t);
+      if (t < 1) {
+        taskTimer.current = setTimeout(tick, 16);
+      } else {
+        setActive(false);
+        setProgress(0);
+      }
+    };
+    tick();
+  }, [reduced, active]);
+  useEffect(
+    () => () => {
+      if (taskTimer.current) clearTimeout(taskTimer.current);
+    },
+    [],
+  );
   return (
-    <div
-      ref={ref}
-      className={s.instrument}
-      data-ui
-      onPointerMove={(e) => {
-        if (!reduced) {
-          const rect = e.currentTarget.getBoundingClientRect();
-          setActivity(0.2 + (0.6 * (e.clientX - rect.left)) / rect.width);
-        }
-      }}
-      onPointerLeave={() => setActivity(0.2)}
-    >
-      <motion.div style={{ y: reduced ? 0 : y }} className={s.orb}>
-        <AnimatedVoiceOrb
-          activity={activity}
-          size="100%"
-          style={{ color: "#9fddd6" }}
-        />
-      </motion.div>
-      <div className={s.instrumentText}>
-        <div className={s.command}>
-          <span aria-hidden="true">●</span> Voicela · Ready when you are
+    <>
+      <div
+        ref={ref}
+        className={s.instrument}
+        data-ui
+        onPointerMove={(e) => {
+          if (!reduced) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            setActivity(0.2 + (0.6 * (e.clientX - rect.left)) / rect.width);
+          }
+        }}
+        onPointerLeave={() => setActivity(0.2)}
+        onPointerDown={runTask}
+      >
+        <motion.div style={{ y: reduced ? 0 : y }} className={s.orb}>
+          <AnimatedVoiceOrb
+            activity={activity}
+            size="100%"
+            style={{ color: "#9fddd6" }}
+          />
+        </motion.div>
+        <div className={s.instrumentText}>
+          <div className={s.command}>
+            <span aria-hidden="true">●</span> Voicela · Ready when you are
+          </div>
+          <p>
+            “Make room for
+            <br />
+            what matters.”
+          </p>
+          <span>A little less between you and your next move.</span>
         </div>
-        <p>
-          “Make room for
-          <br />
-          what matters.”
-        </p>
-        <span>A little less between you and your next move.</span>
       </div>
-    </div>
+      <SignalRibbon
+        className={s.signal}
+        activity={activity}
+        progress={active ? progress : 0}
+        active={active}
+        label="Simulated voice activity"
+      />
+    </>
   );
 }
 export function VoiceActivation() {

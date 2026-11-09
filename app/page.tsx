@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Check, Monitor, ShieldCheck, Smartphone } from "lucide-react";
+import { ArrowUpRight, Check, Monitor, Smartphone } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Container } from "@/components/ui/container";
@@ -93,13 +94,14 @@ export default function Home() {
               <span>Your intent. A clear path forward.</span>
               <span>Browser simulation · no device access</span>
             </div>
-            <img
-              src="/images/hero-stage.svg"
+            <Image
+              src="/images/hero-stage.png"
               alt="A spoken request resolves into mail, calendar and file actions"
-              width={1000}
-              height={720}
-              loading="lazy"
-              className="mt-12 w-full max-w-[1000px] self-center"
+              width={1500}
+              height={1080}
+              priority
+              sizes="(min-width: 1000px) 1000px, 100vw"
+              className="mt-12 h-auto w-full max-w-[1000px] self-center"
             />
           </section>
         </Container>

@@ -131,6 +131,10 @@
   margin-top: 18px;
   opacity: 0.75;
 }
+.vhome-signal {
+  width: min(620px, 100%);
+  margin: 20px auto 0;
+}
 .vhome-panel {
   background: var(--hp);
   padding: clamp(24px, 4vw, 58px);

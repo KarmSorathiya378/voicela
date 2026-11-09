@@ -43,6 +43,7 @@ export const homeClasses = {
   secondary: "vhome-secondary",
   select: "vhome-select",
   selected: "vhome-selected",
+  signal: "vhome-signal",
   split: "vhome-split",
   srOnly: "vhome-srOnly",
   status: "vhome-status",
