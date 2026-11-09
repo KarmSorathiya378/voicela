@@ -9,6 +9,8 @@ import { Section } from '@/components/ui/section';
 import { Container } from '@/components/ui/container';
 import { Reveal } from '@/components/motion/reveal';
 import { AnimatedVoiceOrb } from '@/components/motion/voice-orb';
+import { SignalRibbon } from '@/components/motion/signal-ribbon';
+import { useReducedMotion } from '@/components/motion/use-motion';
 import { track, EVENTS } from '@/lib/metrics';
 import { initial, reducer, scenarios, type Scenario, type State } from './machine';
 import { files, mail, calendar, chart, originalNote, cleanNote } from './seeds';
@@ -21,6 +23,7 @@ type SpeechWindow = Window & { SpeechRecognition?: new () => Recognition; webkit
 const icons = { Files: Folder, Mail, Calendar: CalendarDays, Notes: StickyNote, Browser: Globe };
 const labels = { idle: 'Ready', listening: 'Reading intent', thinking: 'Planning', acting: 'Acting', 'awaiting-approval': 'Your approval needed', completed: 'Completed', error: 'Needs attention' };
 const progress = { idle: 0, listening: 15, thinking: 35, acting: 65, 'awaiting-approval': 80, completed: 100, error: 100 };
+const samplePrompts = scenarios.map(s => s.prompt);
 
 export function DemoLab() {
   const [state, dispatch] = useReducer(reducer, undefined, () => initial());
@@ -33,6 +36,9 @@ export function DemoLab() {
   const scenario = scenarios.find(x => x.id === state.scenario)!;
   const busy = ['listening', 'thinking', 'acting'].includes(state.phase);
   const locked = state.phase !== 'idle';
+  const reduceMotion = useReducedMotion();
+  const [rotIdx, setRotIdx] = useState(0);
+  const [rotPaused, setRotPaused] = useState(false);
 
   useEffect(() => {
     const action = state.phase === 'listening' ? 'THINK' : state.phase === 'thinking' ? 'ACT' : state.phase === 'acting' ? state.approved ? 'FINISH' : 'RESOLVE' : null;
@@ -42,6 +48,13 @@ export function DemoLab() {
   }, [state.phase, state.approved]);
   useEffect(() => { if (state.phase === 'awaiting-approval') approvalRef.current?.focus(); }, [state.phase]);
   useEffect(() => { if (state.phase === 'completed') track(EVENTS.DEMO_COMPLETE, { scenario: state.scenario, simulated: true }); }, [state.phase, state.scenario]);
+  // Rotate authored example prompts while idle; pause on hover/focus, reduced
+  // motion, or the moment the user interacts with the demo.
+  useEffect(() => {
+    if (state.phase !== 'idle' || mic || reduceMotion || rotPaused) return;
+    const t = setTimeout(() => setRotIdx(i => (i + 1) % samplePrompts.length), 2800);
+    return () => clearTimeout(t);
+  }, [state.phase, mic, reduceMotion, rotPaused, rotIdx]);
   useEffect(() => () => { recognition.current?.abort(); if (micTimer.current) clearTimeout(micTimer.current); }, []);
 
   function stopMic() {
@@ -112,13 +125,14 @@ export function DemoLab() {
             {state.scenario === 'D' && <fieldset className={styles.contextChoices} disabled={locked}><legend>Visible context to share</legend>{(['chart', 'text'] as const).map(value => <label key={value}><input type="radio" name="context" checked={state.context === value} onChange={() => dispatch({ type: 'CONTEXT', value })} />{value === 'chart' ? 'Completed projects chart' : 'Selected launch paragraph'}</label>)}</fieldset>}
             <form onSubmit={e => { e.preventDefault(); start(); }}>
               <label htmlFor="demo-intent">Your intent <span className={styles.muted}>(typed by default)</span></label>
-              <div className={styles.inputRow}><input id="demo-intent" value={state.prompt} disabled={locked || mic} onChange={e => dispatch({ type: 'PROMPT', value: e.target.value })} maxLength={300} autoComplete="off" aria-describedby="intent-help" /><Button type="submit" disabled={locked || mic || !state.prompt.trim()}>Run simulation <ArrowUpRight size={16} /></Button></div>
+              <div className={styles.inputRow} onFocus={() => setRotPaused(true)} onBlur={() => setRotPaused(false)} onMouseEnter={() => setRotPaused(true)} onMouseLeave={() => setRotPaused(false)}><input id="demo-intent" value={state.prompt} disabled={locked || mic} onChange={e => dispatch({ type: 'PROMPT', value: e.target.value })} maxLength={300} autoComplete="off" aria-describedby="intent-help" /><Button type="submit" disabled={locked || mic || !state.prompt.trim()}>Run simulation <ArrowUpRight size={16} /></Button></div>
+              {state.phase === 'idle' && !mic && <button type="button" className={styles.rotatingSample} disabled={locked} onClick={() => dispatch({ type: 'PROMPT', value: samplePrompts[rotIdx] })}>Try: “{samplePrompts[rotIdx]}”</button>}
               <p id="intent-help" className={styles.inputHelp}>Seeded scenario: {scenario.description} Typed intent chooses a file in Files; other scenarios replay the selected task with fixed sample data.</p>
             </form>
             <div className={styles.options}><label><input type="checkbox" checked={state.failure} disabled={locked} onChange={e => dispatch({ type: 'FAILURE', value: e.target.checked })} /> Simulate an unavailable app</label><button type="button" disabled={locked} onClick={toggleMic} className={styles.micButton}><Mic size={16} />{mic ? 'Stop microphone' : 'Use microphone (optional)'}</button></div>
             <p className={styles.micHelp} role="status">{micNotice} Enabling speech may share audio with your browser’s speech provider.</p>
             <details className={styles.micPrivacy}><summary>Before enabling your microphone</summary><p>Only selecting “Use microphone” starts the browser’s speech service and permission flow. Depending on your browser, audio may be processed by its speech provider. Voicela does not store audio here. Review the transcript before running; typed mode needs no microphone.</p></details>
-            <div className={styles.progressLine}><progress aria-label="Scenario progress" value={progress[state.phase]} max={100} /><span>{labels[state.phase]}</span></div>
+            <div className={styles.progressLine}><SignalRibbon activity={busy || mic ? 0.75 : 0.12} progress={progress[state.phase] / 100} active={busy || ['awaiting-approval', 'completed'].includes(state.phase)} label="Scenario progress" /><progress className={styles.srOnly} aria-label="Scenario progress" value={progress[state.phase]} max={100} /><span>{labels[state.phase]}</span></div>
             {state.phase === 'awaiting-approval' && <div className={styles.approval} role="region" aria-label="Review and approve simulated action"><ShieldCheck size={21} /><div><strong>{state.scenario === 'B' ? 'Approve this exact reply?' : state.scenario === 'C' ? 'Approve the conflict-free time?' : 'Apply the reviewed rewrite?'}</strong><p>{state.scenario === 'B' ? `To ${mail.address} · Re: ${mail.subject}. The full reply appears in Mail.` : state.scenario === 'C' ? `${calendar.title} · ${calendar.date} · ${calendar.available} · ${calendar.zone}.` : 'Only the seeded Notes document will change.'}</p><div className={styles.approvalActions}><Button ref={approvalRef} onClick={() => { setApp(scenario.app); dispatch({ type: 'APPROVE' }); }}>{state.scenario === 'B' ? 'Approve simulated send' : state.scenario === 'C' ? 'Approve simulated event' : 'Apply simulated edit'}</Button><Button onClick={() => dispatch({ type: 'CANCEL' })}>Decline</Button><button type="button" onClick={() => setApp(scenario.app)}>Review {scenario.app}</button></div></div></div>}
             {busy && <Button onClick={() => { stopMic(); dispatch({ type: 'CANCEL' }); }}><Square size={14} />Cancel run</Button>}
             {(state.phase === 'completed' || state.phase === 'error') && <div className={styles.resultActions}><Button onClick={() => reset()}><RotateCcw size={15} />{state.phase === 'error' ? 'Reset and recover' : 'Reset to replay'}</Button>{state.scenario === 'E' && state.applied && <Button onClick={() => dispatch({ type: 'UNDO' })}>Undo edit</Button>}</div>}

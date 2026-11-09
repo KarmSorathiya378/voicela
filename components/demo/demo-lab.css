@@ -119,6 +119,9 @@
 .v-demo-inputRow > input { min-width: 0; flex: 1; border: 1px solid #4a4e53; background: #1b1d1f; color: #f5f5f4; border-radius: 5px; padding: 12px; font-size: 13px; }
 .v-demo-inputRow > button, .v-demo-approvalActions > button:first-child { background: #f4f5f4 !important; color: #151718 !important; border: 0; white-space: nowrap; }
 .v-demo-inputHelp { color: var(--demo-muted); font-size: 11px; line-height: 1.7; margin: 9px 0 14px; }
+.v-demo-rotatingSample { display: inline-block; margin: 8px 0 12px; border: 1px solid #3b3f43; background: transparent; color: var(--demo-muted); border-radius: 6px; padding: 7px 10px; font-size: 11px; min-height: 32px; }
+.v-demo-rotatingSample:hover { background: #27292b; color: #dfe2e5; }
+.v-demo-srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .v-demo-options { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px; }
 .v-demo-options label { display: flex; align-items: center; gap: 8px; }
 .v-demo-micButton { display: flex; align-items: center; gap: 7px; border: 0; color: #e2e4e6; background: transparent; padding: 4px; font-size: 11px !important; }
@@ -127,6 +130,7 @@
 .v-demo-micPrivacy summary { cursor: pointer; padding-block: 5px; }
 .v-demo-micPrivacy p { line-height: 1.7; margin-top: 8px; }
 .v-demo-progressLine { display: flex; gap: 15px; align-items: center; margin-top: 18px; }
+.v-demo-progressLine .v-signal { flex: 1 1 auto; min-width: 0; }
 .v-demo-progressLine progress { flex: 1; min-width: 0; width: 100%; appearance: none; height: 3px; border: 0; background: #34373a; border-radius: 3px; overflow: hidden; }
 .v-demo-progressLine progress::-webkit-progress-bar { background: #34373a; }
 .v-demo-progressLine progress::-webkit-progress-value { background: var(--demo-accent); transition: width 200ms; }

@@ -58,6 +58,8 @@ export const styles = {
   'examples': 'v-demo-examples',
   'inputRow': 'v-demo-inputRow',
   'inputHelp': 'v-demo-inputHelp',
+  'rotatingSample': 'v-demo-rotatingSample',
+  'srOnly': 'v-demo-srOnly',
   'options': 'v-demo-options',
   'micButton': 'v-demo-micButton',
   'micHelp': 'v-demo-micHelp',
