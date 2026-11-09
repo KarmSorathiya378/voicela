@@ -77,6 +77,11 @@ fn append_activity_log(tool: ToolName, intent: String, core: Core<'_>) -> Result
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
+            #[cfg(desktop)]
+            {
+                use tauri_plugin_global_shortcut::Builder;
+                app.handle().plugin(Builder::new().build())?;
+            }
             let directory = app.path().app_data_dir()?;
             std::fs::create_dir_all(&directory)?;
             let log = activity_log::ActivityLog::open(&directory.join("activity.sqlite3"))
