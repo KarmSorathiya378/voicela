@@ -1,0 +1,26 @@
+.intent-engine { min-width: 0; --engine-accent: var(--vs-blue, #285b48); --engine-line: var(--vs-line, #d7deda); }
+.intent-engine > p, .engine-approval p { margin: 12px 0 16px; }
+.intent-engine .section-title { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.intent-engine .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.intent-engine button { min-height: 44px; padding: 10px 14px; font: inherit; font-weight: 600; border-radius: 6px; border: 1px solid transparent; color: #fff; background: var(--engine-accent); }
+.intent-engine button.secondary { color: var(--engine-accent); background: transparent; border-color: var(--engine-line); }
+.intent-engine button:disabled { opacity: .55; cursor: not-allowed; }
+.intent-engine button:hover:enabled { filter: brightness(.9); }
+.intent-engine :is(button, summary):focus-visible { outline: 2px solid var(--engine-accent); outline-offset: 4px; }
+.intent-engine .notice { padding: 14px; border-radius: 6px; background: #e9effd; color: #303847; }
+.intent-engine .error { padding: 14px; border-radius: 6px; background: #faeaea; color: #8b2929; }
+.intent-engine .badge, .intent-engine .state { padding: 4px 8px; border-radius: 4px; font-size: 12px; background: #edeeeb; color: #404853; }
+.intent-engine details { margin-top: 16px; }
+.intent-engine summary { padding: 4px 0; cursor: pointer; color: var(--engine-accent); }
+.intent-engine pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 14px; background: #edeeeb; border-radius: 6px; }
+.intent-engine .hint { font-size: 13px; }
+.intent-engine p, .intent-engine li, .intent-engine strong { overflow-wrap: anywhere; }
+.engine-transcript { font-weight: 600; color: inherit; white-space: pre-wrap; }
+.intent-engine progress { display: block; width: 100%; height: 8px; margin: 12px 0 24px; accent-color: var(--engine-accent); }
+.engine-steps { padding-left: 24px; }
+.engine-steps > li { padding: 16px 0 20px 8px; border-top: 1px solid #d7deda; }
+.engine-approval { margin-top: 24px; padding: 24px; border: 1px solid #b7c9b9; border-radius: 12px; background: #f9fcf8; }
+.engine-approval h3 { text-transform: none; }
+.engine-audit { list-style: none; padding: 0; max-height: 320px; overflow: auto; scrollbar-color: #acb8b1 transparent; }
+.engine-audit li { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-top: 1px solid #d7deda; font-size: 13px; line-height: 1.5; }
+@media (max-width: 520px) { .engine-audit li { grid-template-columns: 1fr; gap: 4px; } .engine-approval { padding: 16px; } }
