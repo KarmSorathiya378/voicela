@@ -71,7 +71,7 @@
   background: color-mix(in srgb, var(--hp) 82%, var(--hi));
 }
 .vhome-home :is(a, button, input, select):focus-visible {
-  outline: 3px solid #148d9d;
+  outline: 3px solid var(--accent, #3869dc);
   outline-offset: 5px;
 }
 .vhome-instrument {

@@ -17,6 +17,9 @@ export { Navbar };
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
+  const [scrolled, setScrolled] = useState(
+    typeof window !== "undefined" && window.scrollY > 12,
+  );
   const toggle = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -33,6 +36,12 @@ export default function Navbar() {
     document.documentElement.classList.toggle("dark", active);
     // Theme is read after hydration to keep server markup deterministic.
     queueMicrotask(() => setDark(active));
+  }, []);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
   useEffect(() => {
     if (!open) return;
@@ -73,7 +82,13 @@ export default function Navbar() {
     }
   }
   return (
-    <header className="sticky top-0 z-50 v-hairline border-b bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
+    <header
+      className={`sticky top-0 z-50 transition-colors duration-300 ${
+        scrolled
+          ? "v-hairline border-b bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/70"
+          : "border-b border-transparent bg-transparent"
+      }`}
+    >
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-5 focus:top-3 focus:z-50 focus:bg-background focus:p-3"

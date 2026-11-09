@@ -1,51 +1,53 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Paper, ink, and one signal color. Theme selection is class-based. */
+/* Paper, ink, and one cool-blue signal color. Theme selection is class-based.
+   Token direction from Design.md: warm off-white canvas, near-black ink, a
+   restrained cool-blue interactive accent, quiet hairlines, night sections. */
 :root,
 .light {
   color-scheme: light;
-  --background: #fafaf9;
+  --background: #f5f5f2;
   --foreground: #17191c;
   --surface: #ffffff;
-  --surface-raised: #f2f3f2;
-  --muted: #eeefed;
-  --muted-foreground: #62676d;
-  --border: #dcdedc;
-  --accent: #075985;
+  --surface-raised: #ecedea;
+  --muted: #ecece9;
+  --muted-foreground: #6b7078;
+  --border: #d9dcdf;
+  --accent: #3869dc;
   --accent-foreground: #ffffff;
-  --accent-soft: #e2f1f7;
+  --accent-soft: #eaf0ff;
   --primary: #17191c;
-  --primary-foreground: #fafaf9;
-  --danger: #b42332;
-  --success: #27704b;
-  --ring: #0369a1;
-  --elevation-panel: 0 12px 40px -20px rgb(23 25 28 / 0.18);
+  --primary-foreground: #f5f5f2;
+  --danger: #b54a4a;
+  --success: #237a57;
+  --ring: #3869dc;
+  --elevation-panel: 0 14px 44px -22px rgb(23 25 28 / 0.2);
 }
 .dark {
   color-scheme: dark;
-  --background: #101214;
-  --foreground: #f1f2ef;
-  --surface: #181b1e;
-  --surface-raised: #212529;
-  --muted: #25292d;
-  --muted-foreground: #a4abb1;
-  --border: #343a40;
-  --accent: #38bdf8;
-  --accent-foreground: #062435;
-  --accent-soft: #142e3b;
-  --primary: #f1f2ef;
-  --primary-foreground: #101214;
-  --danger: #fda4af;
-  --success: #86d3ab;
-  --ring: #38bdf8;
-  --elevation-panel: 0 12px 40px -20px rgb(0 0 0 / 0.5);
+  --background: #111318;
+  --foreground: #f7f7f5;
+  --surface: #1b1e25;
+  --surface-raised: #262a33;
+  --muted: #22262e;
+  --muted-foreground: #a9adb6;
+  --border: #343a46;
+  --accent: #7c9df0;
+  --accent-foreground: #0b1020;
+  --accent-soft: #1e2740;
+  --primary: #f7f7f5;
+  --primary-foreground: #111318;
+  --danger: #f0a0a8;
+  --success: #7dd3a8;
+  --ring: #7c9df0;
+  --elevation-panel: 0 14px 44px -22px rgb(0 0 0 / 0.55);
 }
 :root {
-  --radius-control: 4px;
-  --radius-small: 8px;
-  --radius-card: 12px;
-  --radius-panel: 16px;
+  --radius-control: 10px;
+  --radius-small: 12px;
+  --radius-card: 16px;
+  --radius-panel: 20px;
   --space-unit: 0.25rem;
   --space-section: clamp(4rem, 8vw, 8rem);
   --duration-hover: 160ms;
