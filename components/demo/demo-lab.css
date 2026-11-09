@@ -168,3 +168,28 @@
 @media (max-width: 800px) { .v-demo-section { padding-block: 42px 28px !important; } .v-demo-intro { flex-direction: column; gap: 18px; margin-bottom: 24px; } .v-demo-intro h1 { max-width: 550px; } .v-demo-intro p { font-size: 15px; } .v-demo-safety { font-size: 11px; } .v-demo-safety br { display: none; } .v-demo-safety strong { margin-left: 7px; } .v-demo-workspace { display: flex; flex-direction: column; } .v-demo-scenarios { border: 0; padding: 18px 12px 12px; } .v-demo-railHeading { padding-inline: 6px; } .v-demo-scenarios > .v-demo-muted, .v-demo-railFoot { display: none; } .v-demo-scenarioList { flex-direction: row; overflow-x: auto; margin-top: 12px; gap: 6px; padding-bottom: 5px; } .v-demo-scenario { width: auto; white-space: nowrap; padding: 10px 12px; align-items: center; gap: 7px; min-height: 44px; } .v-demo-scenario small, .v-demo-scenario > svg:last-child { display: none; } .v-demo-scenario > svg { margin-top: 0; } .v-demo-scenario strong { font-size: 12px; } .v-demo-desktopBar { padding-inline: 16px; } .v-demo-desktopBar > span:last-child { font-size: 11px; } .v-demo-mainPane { width: 100%; } .v-demo-below { flex-direction: column; gap: 10px; } }
 @media (max-width: 480px) { .v-demo-desktop { padding: 12px; } .v-demo-dock { gap: 0; } .v-demo-dock button { flex-direction: column; padding: 6px 8px; font-size: 11px; min-height: 52px; gap: 5px; } .v-demo-window { min-height: 350px; } .v-demo-appContent { padding: 16px 12px; } .v-demo-windowBar { gap: 9px; padding-inline: 12px; } .v-demo-controls { padding: 20px 16px; } .v-demo-inputRow { flex-direction: column; } .v-demo-inputRow input { font-size: 16px; min-height: 46px; } .v-demo-inputRow > button { justify-content: center; min-height: 44px; } .v-demo-audit ol { grid-template-columns: 1fr; gap: 0; } .v-demo-audit li { padding-bottom: 20px; } .v-demo-assistantText > div { flex-wrap: wrap; gap: 3px 9px; } .v-demo-assistantText p { font-size: 11px; } .v-demo-orb, .v-demo-orb > * { width: 32px !important; height: 32px !important; } .v-demo-assistant { gap: 10px; padding-inline: 0; } .v-demo-fileList > div { gap: 8px; padding-inline: 3px; } .v-demo-fileList strong { font-size: 11px; } .v-demo-fileList small { font-size: 11px; } .v-demo-fileList > div > svg { width: 18px; } .v-demo-fileList button { font-size: 11px; padding-inline: 7px; } .v-demo-chart { gap: 14px; } .v-demo-chart small { font-size: 11px; } .v-demo-address { font-size: 11px; } .v-demo-address span { display: none; } .v-demo-contextChoices label { min-height: 44px; } .v-demo-options label { min-height: 44px; } .v-demo-examples button { min-height: 44px; } .v-demo-intro h1 { font-size: 30px; } }
 @media (prefers-reduced-motion: reduce) { .v-demo-lab *, .v-demo-lab *::before, .v-demo-lab *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } .v-demo-cursorActing { transform: none; } }
+
+/* Static mobile concept and bottom composer stay inside the demo namespace. */
+.v-demo-conceptBadge { display: inline-block; font-size: 11px; line-height: 1.6; color: var(--demo-accent); margin-top: 5px; }
+.v-demo-conceptBody { padding: clamp(20px, 3vw, 32px); }
+.v-demo-conceptBody h2 { font-size: 24px; line-height: 1.25; letter-spacing: -.025em; margin: 0 0 12px; }
+.v-demo-conceptBody p { color: var(--demo-muted); line-height: 1.75; margin: 12px 0 20px; }
+.v-demo-conceptBody > button { background: var(--demo-ink); color: var(--demo-ground); white-space: normal; }
+.v-demo-conceptFigure { margin: 24px 0; }
+.v-demo-conceptFigure img { display: block; width: 100%; max-width: 640px; height: auto; border-radius: 8px; }
+.v-demo-conceptFigure figcaption { color: var(--demo-muted); font-size: 12px; margin-top: 12px; }
+.v-demo-conceptBody .v-demo-conceptSafety { display: flex; align-items: flex-start; gap: 8px; color: var(--demo-accent); }
+.v-demo-conceptSafety svg { flex-shrink: 0; margin-top: 3px; }
+.v-demo-commandComposer { margin-top: 22px; padding-top: 18px; border-top: 1px solid #303236; }
+.v-demo-progressLine > .v-demo-srOnly { width: 1px; height: 1px; }
+.v-demo-scenario > span { min-width: 0; }
+@media (max-width: 800px) {
+  .v-demo-scenario { flex-shrink: 0; }
+  .v-demo-mobileConcept .v-demo-desktopBar { flex-wrap: wrap; }
+}
+@media (max-width: 480px) {
+  .v-demo-controls { overflow-wrap: anywhere; }
+  .v-demo-controlTitle > button { flex-shrink: 0; }
+  .v-demo-commandComposer .v-demo-inputRow > input { font-size: 16px; }
+  .v-demo-conceptBody h2 { font-size: 22px; }
+}

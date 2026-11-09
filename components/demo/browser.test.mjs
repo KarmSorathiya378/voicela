@@ -67,6 +67,17 @@ try {
   await click('Reset and recover');
   await click('Run simulation'); await click('Cancel run'); await sleep(2700);
   assert.match(await text(), /Cancelled/);
+  // Switching to G must cancel a running desktop task without simulating mobile actions.
+  await pick('Draft and send');
+  await click('Run simulation');
+  await pick('Mobile assistant preview');
+  await sleep(2800);
+  assert.match(await text(), /Concept \/ Planned/);
+  assert.match(await text(), /Static concept illustration/);
+  assert.equal(await page.eval(() => document.querySelector('.v-demo-commandComposer')), null);
+  assert.equal(await page.eval(() => document.querySelector('.v-demo-mobileConcept img')?.getAttribute('src')), '/images/mobile-assistant-preview.svg');
+  await click('Try a desktop simulation');
+  assert.equal(await page.eval(() => document.querySelector('.v-demo-audit ol')), null, 'G clears the prior action trail');
   await pick('Find my document');
   for (const width of [1440, 768, 390]) {
     await page.setViewport({ width, height: 900, dsf: 1 });
@@ -74,10 +85,29 @@ try {
     await sleep(200);
     assert.equal(await page.eval(() => document.documentElement.scrollWidth <= innerWidth), true, `Overflow at ${width}`);
     await page.screenshot({ path: join(out, `viewport-${width}.png`), format: 'png', fullPage: true });
+    for (const name of ['Find my document', 'Draft and send', 'Schedule a meeting', 'Screen context', 'Dictation & edit', 'Mobile assistant preview']) {
+      await pick(name);
+      assert.equal(await page.eval(() => document.documentElement.scrollWidth <= innerWidth), true, `${name}: overflow at ${width}`);
+      if (name === 'Mobile assistant preview') {
+        assert.equal(await page.eval(() => { const img = document.querySelector('.v-demo-mobileConcept img'); return img.complete && img.naturalWidth > 0; }), true);
+        await page.screenshot({ path: join(out, `mobile-concept-${width}.png`), format: 'png', fullPage: true });
+      } else {
+        assert.equal(await page.eval(() => {
+          const form = document.querySelector('.v-demo-commandComposer');
+          const input = form.querySelector('input');
+          const button = form.querySelector('button[type="submit"]');
+          form.scrollIntoView({ block: 'center', behavior: 'instant' });
+          input.focus();
+          const a = input.getBoundingClientRect(), b = button.getBoundingClientRect();
+          return form === form.parentElement.lastElementChild && !input.disabled && !button.disabled && document.activeElement === input && a.width >= 100 && b.height >= 40 && a.top >= 0 && b.bottom <= innerHeight && a.left >= 0 && b.right <= innerWidth;
+        }), true, `${name}: bottom composer reachable at ${width}`);
+      }
+    }
+    await pick('Find my document');
   }
   await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
   await run();
   assert.equal(await page.eval(() => [...document.querySelectorAll('[aria-hidden="true"]')].filter(el => el.querySelector('svg') && el.textContent === 'Voicela').every(el => getComputedStyle(el).animationName === 'none')), true);
   assert.deepEqual(page.consoleErrors, []);
-  console.log('PASS: A–E, explicit keyboard approval, file errors, cancellation, undo, three widths, reduced motion, no runtime errors.');
+  console.log('PASS: A–E, explicit keyboard approval, file errors, cancellation, undo, G static concept and cancellation, three widths with reachable bottom composers, reduced motion, no runtime errors.');
 } finally { await browser.close(); }

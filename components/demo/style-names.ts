@@ -1,5 +1,11 @@
 // Explicitly scoped classes avoid the project-wide Turbopack CSS-module rewrite.
 export const styles = {
+  'conceptBadge': 'v-demo-conceptBadge',
+  'mobileConcept': 'v-demo-mobileConcept',
+  'conceptBody': 'v-demo-conceptBody',
+  'conceptFigure': 'v-demo-conceptFigure',
+  'conceptSafety': 'v-demo-conceptSafety',
+  'commandComposer': 'v-demo-commandComposer',
   'lab': 'v-demo-lab',
   'section': 'v-demo-section',
   'sectionContainer': 'v-demo-sectionContainer',

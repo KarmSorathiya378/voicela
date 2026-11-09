@@ -12,8 +12,9 @@ Nothing connects to an account, opens an actual document, or sends a message.
 - C: seeded scheduling conflict, alternative time with timezone, approval, simulated insertion.
 - D: explicit chart or paragraph context selection, visible scope highlight, source-limited explanation. Chart changes are computed from shared seed values.
 - E: bonus filler removal with original/rewrite diff, explicit apply, and undo.
+- G: Mobile assistant preview, a static Concept / Planned illustration using the supplied phone mockup. No mobile controls or account connections are implemented. Selecting G resets the previous run and stops its microphone/timers; returning to a desktop scenario starts fresh.
 
-All scenarios support reset/replay, in-flight cancellation, unavailable-app failure injection, and recovery. Choosing another scenario cancels the current run and clears its simulated changes.
+All interactive scenarios (A–E) support reset/replay, in-flight cancellation, unavailable-app failure injection, and recovery. Choosing another scenario cancels the current run and clears its simulated changes.
 
 ## State machine
 
@@ -35,7 +36,7 @@ Typed input is the default and works without speech APIs. Optional browser Speec
 
 `node --test components/demo/machine.test.cjs` covers intent lookup, both file errors, gates, duplicate approval, stale transitions, cancellation, reset, every scenario's failure/recovery, context source, and undo.
 
-`node components/demo/browser.test.mjs <path-to-design-skill/scripts/lib/cdp.mjs>` exercises A–E in local Chromium, keyboard approval, error recovery, cancellation, undo, responsive overflow, and reduced motion. Screenshots are written to the temporary `voicela-demo-qa` directory by default. Browser microphone permission is optional and is not required for tests.
+`node components/demo/browser.test.mjs <path-to-design-skill/scripts/lib/cdp.mjs>` exercises A–E in local Chromium, keyboard approval, error recovery, cancellation, undo, G concept selection and cancellation, responsive overflow for all six rail entries at 1440/768/390px, reachable bottom command composers, and reduced motion. Screenshots are written to the temporary `voicela-demo-qa` directory by default. Browser microphone permission is optional and is not required for tests.
 
 The stylesheet uses the `v-demo-` prefix to keep selectors isolated. `style-names.ts` supplies explicit class names because the initial project-wide Tailwind Turbopack loader rewrites CSS-module filenames and drops their exported class maps.
 

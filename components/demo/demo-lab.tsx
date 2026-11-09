@@ -1,7 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useReducer, useRef, useState } from 'react';
-import { ArrowUpRight, Check, FileText, Folder, Mail, CalendarDays, StickyNote, Globe, Mic, MousePointer2, RotateCcw, ShieldCheck, Square, Volume2 } from 'lucide-react';
+import { ArrowUpRight, Check, FileText, Folder, Mail, CalendarDays, StickyNote, Globe, Mic, MousePointer2, RotateCcw, ShieldCheck, Smartphone, Square, Volume2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -27,6 +28,7 @@ const samplePrompts = scenarios.map(s => s.prompt);
 
 export function DemoLab() {
   const [state, dispatch] = useReducer(reducer, undefined, () => initial());
+  const [concept, setConcept] = useState(false);
   const [app, setApp] = useState('Files');
   const [mic, setMic] = useState(false);
   const [micNotice, setMicNotice] = useState('Typed input is on. Microphone access is optional.');
@@ -51,10 +53,10 @@ export function DemoLab() {
   // Rotate authored example prompts while idle; pause on hover/focus, reduced
   // motion, or the moment the user interacts with the demo.
   useEffect(() => {
-    if (state.phase !== 'idle' || mic || reduceMotion || rotPaused) return;
+    if (concept || state.phase !== 'idle' || mic || reduceMotion || rotPaused) return;
     const t = setTimeout(() => setRotIdx(i => (i + 1) % samplePrompts.length), 2800);
     return () => clearTimeout(t);
-  }, [state.phase, mic, reduceMotion, rotPaused, rotIdx]);
+  }, [concept, state.phase, mic, reduceMotion, rotPaused, rotIdx]);
   useEffect(() => () => { recognition.current?.abort(); if (micTimer.current) clearTimeout(micTimer.current); }, []);
 
   function stopMic() {
@@ -63,6 +65,7 @@ export function DemoLab() {
     setMic(false);
   }
   function reset(id?: Scenario) {
+    setConcept(false);
     stopMic(); dispatch({ type: 'RESET', scenario: id });
     setApp(scenarios.find(s => s.id === (id ?? state.scenario))!.app);
     setMicNotice('Typed input is on. Microphone access is optional.');
@@ -100,10 +103,15 @@ export function DemoLab() {
         <aside className={styles.scenarios} aria-label="Demo scenarios">
           <div className={styles.railHeading}><h2>Demo lab</h2><Badge>Simulated</Badge></div>
           <p className={styles.muted}>One intent. A visible chain of actions.</p>
-          <div className={styles.scenarioList}>{scenarios.map(s => { const Icon = icons[s.app as keyof typeof icons]; return <button key={s.id} type="button" aria-pressed={state.scenario === s.id} onClick={() => reset(s.id)} className={`${styles.scenario} ${state.scenario === s.id ? styles.selected : ''}`}><Icon size={18} /><span><strong>{s.name}</strong><small>{s.description}</small></span><ArrowUpRight size={15} /></button>; })}</div>
+          <div className={styles.scenarioList}>{scenarios.map(s => { const Icon = icons[s.app as keyof typeof icons]; return <button key={s.id} type="button" aria-pressed={!concept && state.scenario === s.id} onClick={() => reset(s.id)} className={`${styles.scenario} ${!concept && state.scenario === s.id ? styles.selected : ''}`}><Icon size={18} /><span><strong>{s.name}</strong><small>{s.description}</small></span><ArrowUpRight size={15} /></button>; })}
+            <button type="button" aria-pressed={concept} onClick={() => { reset('A'); setConcept(true); }} className={`${styles.scenario} ${concept ? styles.selected : ''}`}>
+              <Smartphone size={18} /><span><strong>Mobile assistant preview</strong><span className={styles.conceptBadge}>G · Concept / Planned</span></span><ArrowUpRight size={15} />
+            </button>
+          </div>
           <div className={styles.railFoot}><ShieldCheck size={17} /><p>Every send and calendar change pauses for your approval. Reset restores this demo’s seeded workspace.</p></div>
         </aside>
 
+        {concept ? <MobileConcept onReturn={() => reset('A')} /> : <>
         <div className={styles.mainPane}>
           <div className={styles.desktopBar}><span><span className={styles.desktopMark} />Voicela workspace</span><span>Local simulation · Nov 12, 2026</span></div>
           <div className={styles.desktop}>
@@ -123,12 +131,6 @@ export function DemoLab() {
             <div className={styles.controlTitle}><h2>{scenario.name}</h2><Button onClick={() => reset()} aria-label={`Reset ${scenario.name}`}><RotateCcw size={15} /> Reset</Button></div>
             {state.scenario === 'A' && <div className={styles.examples} aria-label="File search examples">{['Find my October invoice', 'Open the website project brief', 'Find my research notes', 'Find missing contract', 'Find private payroll'].map(text => <button type="button" key={text} disabled={locked || mic} onClick={() => dispatch({ type: 'PROMPT', value: text })}>{text}</button>)}</div>}
             {state.scenario === 'D' && <fieldset className={styles.contextChoices} disabled={locked}><legend>Visible context to share</legend>{(['chart', 'text'] as const).map(value => <label key={value}><input type="radio" name="context" checked={state.context === value} onChange={() => dispatch({ type: 'CONTEXT', value })} />{value === 'chart' ? 'Completed projects chart' : 'Selected launch paragraph'}</label>)}</fieldset>}
-            <form onSubmit={e => { e.preventDefault(); start(); }}>
-              <label htmlFor="demo-intent">Your intent <span className={styles.muted}>(typed by default)</span></label>
-              <div className={styles.inputRow} onFocus={() => setRotPaused(true)} onBlur={() => setRotPaused(false)} onMouseEnter={() => setRotPaused(true)} onMouseLeave={() => setRotPaused(false)}><input id="demo-intent" value={state.prompt} disabled={locked || mic} onChange={e => dispatch({ type: 'PROMPT', value: e.target.value })} maxLength={300} autoComplete="off" aria-describedby="intent-help" /><Button type="submit" disabled={locked || mic || !state.prompt.trim()}>Run simulation <ArrowUpRight size={16} /></Button></div>
-              {state.phase === 'idle' && !mic && <button type="button" className={styles.rotatingSample} disabled={locked} onClick={() => dispatch({ type: 'PROMPT', value: samplePrompts[rotIdx] })}>Try: “{samplePrompts[rotIdx]}”</button>}
-              <p id="intent-help" className={styles.inputHelp}>Seeded scenario: {scenario.description} Typed intent chooses a file in Files; other scenarios replay the selected task with fixed sample data.</p>
-            </form>
             <div className={styles.options}><label><input type="checkbox" checked={state.failure} disabled={locked} onChange={e => dispatch({ type: 'FAILURE', value: e.target.checked })} /> Simulate an unavailable app</label><button type="button" disabled={locked} onClick={toggleMic} className={styles.micButton}><Mic size={16} />{mic ? 'Stop microphone' : 'Use microphone (optional)'}</button></div>
             <p className={styles.micHelp} role="status">{micNotice} Enabling speech may share audio with your browser’s speech provider.</p>
             <details className={styles.micPrivacy}><summary>Before enabling your microphone</summary><p>Only selecting “Use microphone” starts the browser’s speech service and permission flow. Depending on your browser, audio may be processed by its speech provider. Voicela does not store audio here. Review the transcript before running; typed mode needs no microphone.</p></details>
@@ -136,14 +138,45 @@ export function DemoLab() {
             {state.phase === 'awaiting-approval' && <div className={styles.approval} role="region" aria-label="Review and approve simulated action"><ShieldCheck size={21} /><div><strong>{state.scenario === 'B' ? 'Approve this exact reply?' : state.scenario === 'C' ? 'Approve the conflict-free time?' : 'Apply the reviewed rewrite?'}</strong><p>{state.scenario === 'B' ? `To ${mail.address} · Re: ${mail.subject}. The full reply appears in Mail.` : state.scenario === 'C' ? `${calendar.title} · ${calendar.date} · ${calendar.available} · ${calendar.zone}.` : 'Only the seeded Notes document will change.'}</p><div className={styles.approvalActions}><Button ref={approvalRef} onClick={() => { setApp(scenario.app); dispatch({ type: 'APPROVE' }); }}>{state.scenario === 'B' ? 'Approve simulated send' : state.scenario === 'C' ? 'Approve simulated event' : 'Apply simulated edit'}</Button><Button onClick={() => dispatch({ type: 'CANCEL' })}>Decline</Button><button type="button" onClick={() => setApp(scenario.app)}>Review {scenario.app}</button></div></div></div>}
             {busy && <Button onClick={() => { stopMic(); dispatch({ type: 'CANCEL' }); }}><Square size={14} />Cancel run</Button>}
             {(state.phase === 'completed' || state.phase === 'error') && <div className={styles.resultActions}><Button onClick={() => reset()}><RotateCcw size={15} />{state.phase === 'error' ? 'Reset and recover' : 'Reset to replay'}</Button>{state.scenario === 'E' && state.applied && <Button onClick={() => dispatch({ type: 'UNDO' })}>Undo edit</Button>}</div>}
+            <form className={styles.commandComposer} onSubmit={e => { e.preventDefault(); start(); }}>
+              <label htmlFor="demo-intent">Your intent <span className={styles.muted}>(typed by default)</span></label>
+              <div className={styles.inputRow} onFocus={() => setRotPaused(true)} onBlur={() => setRotPaused(false)} onMouseEnter={() => setRotPaused(true)} onMouseLeave={() => setRotPaused(false)}><input id="demo-intent" value={state.prompt} disabled={locked || mic} onChange={e => dispatch({ type: 'PROMPT', value: e.target.value })} maxLength={300} autoComplete="off" aria-describedby="intent-help" /><Button type="submit" disabled={locked || mic || !state.prompt.trim()}>Run simulation <ArrowUpRight size={16} /></Button></div>
+              {state.phase === 'idle' && !mic && <button type="button" className={styles.rotatingSample} disabled={locked} onClick={() => dispatch({ type: 'PROMPT', value: samplePrompts[rotIdx] })}>Try: “{samplePrompts[rotIdx]}”</button>}
+              <p id="intent-help" className={styles.inputHelp}>Seeded scenario: {scenario.description} Typed intent chooses a file in Files; other scenarios replay the selected task with fixed sample data.</p>
+            </form>
           </div>
         </div>
 
         <Card className={styles.audit} role="complementary" aria-label="Scenario audit timeline"><div className={styles.auditHeading}><h2>Action trail</h2><Volume2 size={17} aria-hidden="true" /></div><p className={styles.muted}>Scripted steps, visible as they happen. No live telemetry.</p>{state.log.length === 0 ? <div className={styles.emptyTrail}><span /><p>Your plan, actions, and results will appear here.</p></div> : <ol>{state.log.map((entry, i) => <li key={i}><span className={styles.auditDot}>{entry.kind === 'Result' ? <Check size={12} /> : <span />}</span><div><strong>{entry.kind}</strong><p>{entry.text}</p></div></li>)}</ol>}<p className={styles.auditFoot}>Only this run is shown. Reset clears its history.</p></Card>
+        </>}
       </div>
       <div className={styles.below}><p><ShieldCheck size={18} /> A safe place to explore. All documents, messages, and events are sample data.</p><p>Keyboard ready · Motion follows your device preferences</p></div>
     </Container></Section>
   </div>;
+}
+
+function MobileConcept({ onReturn }: { onReturn: () => void }) {
+  return <>
+    <section className={`${styles.mainPane} ${styles.mobileConcept}`} aria-labelledby="mobile-concept-title">
+      <div className={styles.desktopBar}><span><Smartphone size={16} />Mobile assistant preview</span><span className={styles.conceptBadge}>G · Concept / Planned</span></div>
+      <div className={styles.conceptBody}>
+        <h2 id="mobile-concept-title">An assistant beyond the desktop.</h2>
+        <p>A planned mobile concept for reminders, messaging drafts, and cross-device handoff.</p>
+        <figure className={styles.conceptFigure}>
+          <Image src="/images/mobile-assistant-preview.svg" width={640} height={480} alt="Phone mockup illustrating reminders, a message draft, and a handoff to the desktop assistant." />
+          <figcaption>Static concept illustration. The phone controls are part of the image.</figcaption>
+        </figure>
+        <p className={styles.conceptSafety}><ShieldCheck size={18} />Simulated — no real accounts connected.</p>
+        <p>This preview cannot set reminders, send messages, or transfer tasks between devices. These capabilities are planned, not available in this lab.</p>
+        <Button onClick={onReturn}>Try a desktop simulation <ArrowUpRight size={16} /></Button>
+      </div>
+    </section>
+    <Card className={styles.audit} role="complementary" aria-label="Mobile concept scope">
+      <div className={styles.auditHeading}><h2>Preview scope</h2><ShieldCheck size={17} /></div>
+      <p className={styles.muted}>No simulation is running. Selecting this concept resets the previous desktop run and clears its action trail.</p>
+      <p className={styles.muted}>Choose A–E in the rail to explore working simulations with sample data and approval gates.</p>
+    </Card>
+  </>;
 }
 
 function AppWindow({ app, state, dispatch }: { app: string; state: State; dispatch: React.Dispatch<Parameters<typeof reducer>[1]> }) {
