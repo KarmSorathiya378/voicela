@@ -1,0 +1,6 @@
+chore: fix eslint flat config — ignore vendored tooling dirs and relax CJS require rules
+
+- Add .agents/**, .taste-skill/**, .codex/**, .marshell/**, .git/** to globalIgnores
+  in eslint.config.mjs so third-party tooling assets aren't linted.
+- Add flat-config override for **/*.cjs and **/*.test.cjs disabling
+  @typescript-eslint/no-require-imports and no-unused-vars (Node CJS harness).
