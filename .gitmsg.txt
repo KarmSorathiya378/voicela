@@ -1,1 +1,1 @@
-chore: apply Design.md tokens, radii, navbar scroll + focus  
+chore: remove stray commit-message artifact  
