@@ -1,0 +1,5 @@
+npm notice run npx
+npm notice run create-next-app voicela-boot --typescript --tailwind --eslint --app --no-src-dir --import-alias "@/*" --use-npm --yes
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+npm notice run voicela-boot@0.1.0 npx
+npm notice run next typegen

@@ -1,0 +1,190 @@
+AI Voice Operating Layer — Complete Product Requirements Document
+Version 1.0 | 9 November 2026 | Status: Proposed | Development platform: Marshell
+
+1. Executive summary
+Build an original, commercially viable voice-first AI operating layer. Release order: (1) interactive marketing website and honest browser simulation, (2) Windows desktop application, (3) macOS and Linux desktop applications, (4) Android mobile application, (5) iOS mobile application. This is an application running on existing operating systems, not a replacement OS. The goal is to translate spoken intent into controlled, observable actions across approved apps, files and services.
+
+The benchmark is VoiceOS (voiceos.com), particularly its combination of dictation, screen context, cross-app actions, and interactive product storytelling. Build equivalent categories of functionality with original brand identity, UI, code, assets and copy. Do not imply affiliation or copy protected elements.
+
+2. Business objectives and success criteria
+Primary objective: prove that people can understand, trust and benefit from voice-to-action workflows. Secondary: acquire qualified waitlist users before desktop launch; convert to paying customers when core functionality works reliably.
+
+Suggested launch KPIs (targets, not observed metrics): homepage LCP <= 2.5s at p75 on target devices; CLS <= 0.1; INP <= 200ms; 99.9% website availability target; >30% of engaged visitors start a demo; >50% of demo starters complete one scenario; >5% of qualified visitors join waitlist; <1% broken demo sessions. Desktop pilot targets: >=95% success on allowlisted, deterministic task suite, >=99% no unintended consequential actions, 0 known critical security defects at release. Set speech latency targets after measuring supported hardware and model/provider configurations.
+
+3. Users and jobs to be done
+Personas: students researching and organizing work; knowledge workers managing messages/calendars/docs; developers opening repositories and creating notes; creators writing, editing and publishing drafts; users who benefit from hands-free accessibility. Jobs: dictate and revise text, locate a file, prepare a calendar event, draft a message, summarize visible material, automate repetitive workflows, continue a task across approved devices.
+
+4. Product boundaries and promises
+Website demo is an isolated simulation, not unrestricted control of the visitor's real device. Real desktop capabilities depend on operating system, app support, permissions, and network connectivity. Local-first processing is a preference, not a guarantee; cloud inference requires informed opt-in and disclosure. No claim of zero latency, universal app control, always-on availability on all platforms, or remote startup of a fully powered-off smartphone.
+
+5. Release plan and dependencies
+R0: research, brand, architecture, risk register, original visual system, landing site prototype.
+R1: public marketing website, interactive demos, waitlist, pricing explanation, analytics with consent, legal pages, accessibility and performance testing.
+R2: Windows alpha: push-to-talk, speech transcription, polished dictation, text editing, contextual screen understanding with consent, allowlisted app launch and limited cross-app tools, explicit approval for consequential actions.
+R3: Windows beta/GA: installer/signing/updater, robust task logs, rollback where possible, account management, subscriptions, accessibility and reliability.
+R4: macOS: permissions, accessibility APIs, signing/notarization, native shortcuts, platform-specific test matrix.
+R5: Linux: supported desktop environments, Wayland/X11 limitations, packaging and permissions, clearly documented compatibility.
+R6: Android: assistant entry points, permitted foreground services, notification actions, accessibility integration only with justified user consent and policy compliance, power-management behavior.
+R7: iOS: app intents/shortcuts, permitted background tasks, Siri/App Intents integration where feasible; no promise of universal background microphone capture or arbitrary third-party app control.
+
+Do not schedule later releases solely by calendar; gate on security, reliability, user demand and store-policy feasibility.
+
+6. Brand and identity
+Working name: TBD. Do not launch under the VoiceOS brand without rights. Identity requirements: distinctive logo, strong wordmark, custom motion language, consistent voice/orb visualization, black/white/neutral palette with restrained cool accent, elegant editorial typography, intentional contrast. Avoid generic AI gradients, shiny floating cards, copied compositions, unnecessary glass effects and excessive parallax. Provide dark/light themes and reduced-motion alternatives.
+
+7. Marketing website information architecture
+Routes:
+
+/: interactive home and primary conversion.
+/demo: dedicated browser-based demo lab.
+/features: capabilities overview with truthful availability labels.
+/features/dictation, /features/agent, /features/context, /features/automation, /features/privacy.
+/platforms/windows, /platforms/macos, /platforms/linux, /platforms/android, /platforms/ios: status, compatibility and waitlist/download CTAs.
+/pricing: actual terms, platform support, usage limits, refunds and taxes.
+/download: available binaries only; upcoming platforms marked as waitlist.
+/security, /privacy, /terms, /contact, /faq, /changelog, /blog.
+/account: authenticated profile, device sessions, billing and consent controls after backend is ready.
+/developers and /docs: later, only when SDK/API actually ships.
+Navigation: Product, Interactive Demo, Platforms, Pricing, About/Docs, primary Try Demo CTA. Sticky but compact; responsive accessible mobile menu.
+
+8. Homepage storyboard
+Intro/hero: oversized original headline; premium product visualization, not generic abstract AI imagery; two CTAs (Try Interactive Demo, Join Waitlist). Ambient motion responds to pointer and scroll but never prevents reading. Above-fold performance first.
+Voice activation: clickable simulated push-to-talk; waveform responds to provided audio or recorded microphone only after permission; type-to-demo fallback.
+Intent to action: animated, reversible timeline of user instruction -> plan -> tool actions -> result -> approval. Realistic durations, no fabricated benchmarks.
+Interactive desktop: fake desktop containing mock Mail, Calendar, Files, Notes and Browser. User selects scenario; visible cursor, highlights and assistant overlay illustrate actions. Never touch actual files or accounts.
+Context intelligence: move pointer over a mock document, select text and ask for a summary; reveal precisely which context is read.
+Dictation vs action: side-by-side live editing of spoken text versus executing an approved workflow.
+Platform rail: Windows/macOS/Linux/Android/iOS availability, screenshots and release state.
+Privacy lab: toggles illustrate local/cloud data paths, microphone permissions, screen sharing scope and action approvals.
+Pricing: honest ₹1 PC offer, clearly state whether per month/year/one-time once decided; show limits and future mobile plan separately.
+FAQ, waitlist and footer with policies.
+9. Interactive demo specifications
+Demo A — 'Find my document': seeded mock file index; user asks to locate an invoice or PDF; search animation, result, open simulated preview. 3 possible intents, 2 error states.
+Demo B — 'Draft and send': mock inbox and composer; assistant drafts email; user explicitly approves simulated send; success state clearly labeled simulated. No real external messages.
+Demo C — 'Schedule a meeting': mock calendar and contacts; assistant proposes time, detects a seeded conflict, requests approval, inserts simulated event.
+Demo D — 'Screen context': pointer highlights a mock chart or selected text; assistant identifies visible context, explains what it used and returns a useful result.
+Demo E — 'Dictation and edit': microphone optional; sample audio or typed prompt fallback; filler removal and rewrite are shown with diff and undo.
+Demo F — 'Cross-app workflow': seeded message -> task list -> calendar, with step-by-step audit timeline and one approval gate.
+Demo G — 'Mobile preview': simulated phone UI for reminders, messaging drafts and cross-device handoff; mark limitations clearly.
+
+Each demo must include: start/reset/replay, progress, accessible controls, captions, keyboard navigation, screen reader status, cancel, explicit demo badge, failure/recovery scenario, responsive layout, and deterministic offline fallback. If microphone is used, show permission before capture and never silently record. Do not claim live OS actions where none occur.
+
+10. Website interaction and motion system
+Use a coherent motion grammar: hover 120–180ms, panel transitions 180–300ms, hero transitions up to 600ms, spring motion only where appropriate. Use scroll-triggered reveals sparingly; limit simultaneous animated elements. 3D only if it materially explains the product, with static fallback. Implement prefers-reduced-motion, low-power mode, lazy loading, route prefetching, progressive enhancement and touch-first controls. Optimize SVG/Lottie/Canvas/WebGL; never force large videos for core information. No scroll hijacking, cursor traps or invisible navigation.
+
+11. Website design system
+Tokens: neutral surface scale, text contrast, one accent family, typography scale, spacing scale, 4/8/12/16px radii by function, shadow/elevation, border semantics. Responsive breakpoints for narrow mobile, tablet, laptop and wide desktop. Component library: navbar, command capsule, simulated OS window, workflow stepper, mic state, approval modal, toast, pricing card, platform badge, FAQ accordion, input controls, error/retry, skeleton, footer. WCAG 2.2 AA target, visible focus, labels, 44px touch targets where feasible, captioned motion, contrast validation and semantic HTML.
+
+12. Website engineering stack
+Recommended: Next.js App Router + TypeScript, React, Tailwind or CSS modules with design tokens, Motion for React for bounded animations, optional Three.js/R3F only for justified hero asset, Playwright E2E, Vitest unit tests, Storybook for component QA, hosted Postgres (e.g. Supabase/Neon) for waitlist/account, transactional email service, privacy-respecting analytics, Vercel or equivalent hosting. Keep demos client-side with seeded data; API calls optional for real speech demos with explicit disclosure and strict quotas. Never expose model provider keys in browser. Include rate limiting, abuse protection, spam defense, CSP, secure cookies, data retention and monitoring.
+
+13. Desktop functional requirements
+D01: global shortcut and push-to-talk, configurable and conflict-aware.
+D02: clear states idle/listening/transcribing/thinking/acting/awaiting-approval/completed/error.
+D03: speech-to-text with editable transcript, language selection, punctuation and undo.
+D04: dictation into supported active text fields with user control.
+D05: selection-based editing: rewrite, shorten, expand, translate with diff preview.
+D06: contextual vision of current window or explicit region only after permission; visible capture indicator.
+D07: typed allowlisted tools: open app, find file, create note, prepare calendar event, draft message, browser search.
+D08: multi-step planner that shows pending actions, progress and outputs; stop and resume safely.
+D09: confirmations for sending, deleting, purchases, changes to permissions, external sharing and other consequential actions.
+D10: tool results verified; no success message before execution is confirmed.
+D11: activity history, permission history, editable memory, local data deletion, account logout.
+D12: offline fallback for supported transcription and simple local commands, with clear limitations.
+D13: accessibility, localization, installer, auto-update, diagnostics opt-in, crash recovery.
+D14: local/remote model routing configurable according to latency, privacy, cost and hardware.
+D15: multi-device sync only with account consent and end-to-end security design.
+
+14. Desktop platform adapters
+Shared UI/core: Tauri 2, React, TypeScript, Rust, SQLite, typed tool API. Windows: UI Automation, Win32, installer and code signing. macOS: Accessibility and Screen Recording permissions, native APIs, notarization and distribution. Linux: AT-SPI where applicable, portal APIs, X11/Wayland limitations, distro packaging. Each adapter has capability matrix and tests; do not promise parity where OS prevents it.
+
+15. Mobile functional requirements
+M01: tap-to-talk, transcript, speech responses, assistant conversation and saved tasks.
+M02: user-approved app intents and integrations; never promise unrestricted control of third-party apps.
+M03: share sheet and shortcuts for user-initiated workflows.
+M04: reminders and notifications with permission; scheduled server tasks where allowed.
+M05: background functionality subject to battery, microphone and platform policies.
+M06: optional wake-word exploration only where technically and legally permitted, with conspicuous opt-in and battery/privacy evaluation.
+M07: cross-device task handoff when both endpoints are reachable and authorized.
+M08: lock-screen interaction only through permitted platform mechanisms.
+M09: Android foreground service and accessibility usage reviewed against Play policies; iOS App Intents, Shortcuts and background execution constraints reviewed against App Store policies.
+M10: offline commands where feasible; sync after reconnection; clear no-connectivity messaging.
+
+Remote power-on: a third-party app generally cannot boot a completely powered-off smartphone. Do not advertise this capability. Distinguish screen-off/locked, sleeping, disconnected, and fully powered-off states. Some manufacturer-specific remote wake functions may exist but are not a universal product feature.
+
+16. Core AI and orchestration architecture
+Pipeline: user intent -> voice/text capture -> STT -> intent classifier -> policy and permission check -> planner -> typed tool registry -> platform adapter/integration -> execution verifier -> activity record -> response/TTS. Context is bounded and scoped; never indiscriminately scrape all content. Store only needed state. Untrusted web, email, file and screen content cannot override system policy or authorize actions. Provide idempotency keys, retries with backoff, circuit breakers, per-tool timeouts, cancellation and safe compensation when feasible.
+
+Suggested modules: Identity, Device Registry, Entitlements/Billing, Speech Gateway, Model Router, Tool Registry, Workflow Engine, Permission Engine, Context Capture, Memory, Audit Logs, Notification Service, Sync Service, Integrations, Admin Operations.
+
+17. Privacy, security and trust
+Default minimal permissions; explicit opt-in for mic, screen, files, contacts, calendar, email and background features. Explain local vs cloud processing. Encrypt data in transit and at rest; store secrets in platform keychain/secure storage; never put raw credentials into prompts. Per-tool allowlists and typed schemas; no arbitrary model-generated shell execution. Confirmation before irreversible or externally visible actions. Prompt-injection defenses; untrusted content treated as data; separate model instructions from retrieved text. Data retention and deletion controls, consent audit, account/device revocation, safe diagnostics, abuse prevention, privacy policy and incident response. Do not silently record, spy, circumvent locks or wake powered-off devices.
+
+18. Pricing and monetization
+User-proposed PC price: ₹1. Pricing period undecided; choose after unit-economics validation. Candidate approaches: ₹1 promotional introductory payment for a limited trial, or ₹1/month with sharply capped cloud usage and paid upgrades. Clearly disclose taxes, billing period, renewal, cancellations and limits. Local/offline features can have lower marginal inference cost; cloud speech and LLM calls, payment processing, support, hosting and app distribution incur ongoing costs. Do not market unlimited paid AI usage for ₹1 without a sustainable subsidy.
+
+Suggested plan structure (subject to validation): Free Demo (web simulation), PC Intro (₹1 promotional offer, exact term TBD), PC Plus (fair-use cloud automation and advanced integrations, price TBD), Mobile (pricing TBD), Teams (later). No fake discounts or urgency. If users are minors, payment/account flows must comply with applicable age and guardian requirements.
+
+Unit economics model: contribution margin = net receipts after taxes and payment fees - speech processing - LLM inference - TTS - storage/egress - support - refunds/fraud. Track cost per active user, per minute, per completed task and per successful action. Gate pricing launch on measured pilot data.
+
+19. Accounts and payments
+Support email/passkey/social login as appropriate, verification, session management, device list, secure billing portal, invoices, subscription cancellation, refunds, usage meter and deletion. Integrate a compliant payment processor after legal entity and business prerequisites are satisfied. Never store raw payment card details. Use webhooks with signature verification and idempotency. Region-aware tax and currency display. Protect against abuse of ₹1 trials.
+
+20. Analytics and experimentation
+Events: page_view, demo_start, demo_step, demo_complete, demo_reset, mic_permission_choice, waitlist_submit, platform_interest, download_click, onboarding_complete, command_attempt, tool_approval, task_success, task_failure, billing_conversion. Avoid collecting raw audio or sensitive task contents as analytics. Consent-aware attribution, privacy-friendly dashboards, A/B testing with sample size discipline. Track task completion and trust rather than vanity interaction counts.
+
+21. Reliability and performance
+Website: budget for JS and image bytes, mobile Lighthouse checks, Core Web Vitals, SSR/streaming, caching, CDN, graceful fallback. Desktop: process supervision, robust audio device handling, retries, state recovery, updater rollback, OS version matrix. Mobile: battery profiling, background-policy compliance, network recovery and notification reliability. Operational monitoring, structured logs without sensitive content, alerts, incident playbooks and staged rollout.
+
+22. Accessibility and localization
+WCAG 2.2 AA website target. Keyboard-only demo, captions/transcripts, non-voice alternatives, screen-reader status updates, reduced motion, high contrast and adjustable text. Start with English; plan multilingual STT/TTS based on demand and measured accuracy (potentially Hindi and Gujarati). Do not assume accent/language parity without testing.
+
+23. Acceptance tests
+Website: all links/routes valid; no fake functional CTA; each demo runs, resets and handles errors; mic permission is opt-in; keyboard and mobile navigation pass; Lighthouse and Core Web Vitals budgets met; no PII in analytics; forms are rate-limited; clear upcoming-platform labels.
+Desktop: consent gates; correct active-app handling; transcription correction; stop button interrupts pending tools; destructive operations require approval; prompt injection test suite; permission revocation works; tool completion verified; offline states truthful; clean install/uninstall.
+Mobile: OS-specific permissions; lock-screen/foreground/background behavior verified; battery and store-policy tests; no promise of remote power-on; device handoff only for authenticated, reachable devices.
+
+24. Marshell development orchestration
+Main agent: product architect, task decomposition, architecture decisions, code review, dependency management, integration, QA gate. Eight specialist agents: (1) design system and brand, (2) marketing frontend, (3) interactive demos and motion, (4) backend/accounts/billing, (5) AI/speech and orchestration, (6) desktop/platform adapters, (7) mobile apps and sync, (8) security/QA/DevOps. Initially focus agents 1–4 and 8 on website while others prepare contracts and platform feasibility. Work in isolated branches/worktrees, own files, integration checkpoints, automated tests and artifact previews. Never assert untested features complete.
+
+25. First website sprint: actionable backlog
+W01 Define original name, identity, typography and visual tokens.
+W02 Create sitemap, copy deck, component inventory and desktop/mobile wireframes.
+W03 Implement accessible navbar, hero, CTA, footer and responsive shell.
+W04 Build simulated desktop window with deterministic state machine.
+W05 Implement demo scenarios A–D with reset, approval and failure states.
+W06 Add optional microphone input with permission and typed fallback.
+W07 Add smooth motion and reduced-motion paths; performance budget.
+W08 Build platform status pages, waitlist and confirmation emails.
+W09 Add pricing draft with explicit undecided terms; legal placeholders reviewed before launch.
+W10 Add analytics consent, security headers, rate limiting and spam defense.
+W11 Automated unit, E2E, accessibility, responsive and visual-regression tests.
+W12 Deploy staging, run usability tests, resolve issues, then production release.
+
+Definition of Done for website: accessible, responsive, fast, original visual identity, 4+ convincing deterministic interactive demos, honest functionality labels, functioning waitlist, verified deployment, test evidence and no critical defects.
+
+26. Risks and mitigations
+Risk: ₹1 insufficient for recurring inference -> meter usage and validate margin before pricing commitment.
+Risk: platform restrictions prevent advertised actions -> capability matrix, phased release and truthful claims.
+Risk: always-on microphone erodes trust/battery -> opt-in, visible state, platform-approved activation and energy profiling.
+Risk: AI makes incorrect actions -> typed tools, previews, approval, verifiers and audit trail.
+Risk: website overanimation harms accessibility/performance -> progressive enhancement, reduced motion and budgets.
+Risk: copying VoiceOS identity -> independent brand and original assets.
+Risk: unsupported cross-app automation -> start with approved integrations and tested adapters.
+
+27. Decisions requiring founder sign-off
+Original product name and domain.
+₹1 pricing period: one-time, monthly, or limited introductory promotion.
+Launch regions and payment processor.
+First supported speech languages.
+Local-only vs optional cloud inference defaults.
+Website visual direction and whether demo mic is included at launch.
+Scope of initial desktop integrations.
+Mobile pricing and device-support priorities.
+28. Reference research
+VoiceOS official homepage: https://www.voiceos.com/
+VoiceOS architecture and feature overview: https://www.voiceos.com/blog/how-voiceos-is-building-the-voice-operating-system
+VoiceOS about page: https://www.voiceos.com/about
+Research is used for benchmarking publicly described features, not for copying proprietary design or making unverifiable performance claims.
+
+⋮⋮⋮⋮

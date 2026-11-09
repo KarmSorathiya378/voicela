@@ -1,0 +1,4 @@
+npm notice run npx
+npm notice run create-next-app . --typescript --tailwind --eslint --app --no-src-dir --import-alias "@/*" --use-npm --yes
+Could not create a project called [31m"Voicela"[39m because of npm naming restrictions:
+    [31m[1m*[22m[39m name can no longer contain capital letters

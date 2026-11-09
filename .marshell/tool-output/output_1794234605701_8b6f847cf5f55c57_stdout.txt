@@ -1,0 +1,42 @@
+Creating a new Next.js app in [32mD:\karm\voicela-boot[39m.
+
+[1mUsing npm.[22m
+
+Initializing project with template: app-tw 
+
+
+Installing dependencies:
+- [36mnext[39m
+- [36mreact[39m
+- [36mreact-dom[39m
+
+Installing devDependencies:
+- [36m@tailwindcss/turbopack[39m
+- [36m@types/node[39m
+- [36m@types/react[39m
+- [36m@types/react-dom[39m
+- [36meslint[39m
+- [36meslint-config-next[39m
+- [36mtailwindcss[39m
+- [36mtypescript[39m
+
+
+added 359 packages, and audited 366 packages in 2m
+
+146 packages are looking for funding
+  run `npm fund` for details
+
+8 moderate severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+Generating route types...
+✓ Types generated successfully
+
+Initialized a git repository.
+
+[32mSuccess![39m Created voicela-boot at D:\karm\voicela-boot
+
