@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" role="img" aria-label="Voicela on Android — phone tile illustration">
+  <title>Voicela · Android platform tile</title>
+  <defs>
+    <linearGradient id="and-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F7F7F4"/>
+      <stop offset="1" stop-color="#F5F5F2"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="480" fill="url(#and-bg)"/>
+
+  <!-- side buttons -->
+  <rect x="402" y="128" width="6" height="30" rx="3" fill="#6B7078"/>
+  <rect x="402" y="166" width="6" height="52" rx="3" fill="#6B7078"/>
+  <rect x="232" y="150" width="6" height="40" rx="3" fill="#C7CDD4"/>
+
+  <!-- body -->
+  <rect x="240" y="70" width="160" height="330" rx="30" fill="#1B1E25"/>
+  <!-- screen -->
+  <rect x="252" y="82" width="136" height="306" rx="22" fill="#F7F8FA" stroke="#D9DCDF" stroke-width="1"/>
+  <!-- punch-hole camera -->
+  <circle cx="320" cy="98" r="4" fill="#1B1E25"/>
+
+  <!-- assistant pill -->
+  <rect x="268" y="120" width="104" height="44" rx="14" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.2"/>
+  <circle cx="280" cy="142" r="5" fill="#3869DC"/>
+  <g fill="#C7CDD4">
+    <rect x="292" y="134" width="60" height="5" rx="2.5"/>
+    <rect x="292" y="146" width="52" height="5" rx="2.5"/>
+  </g>
+
+  <!-- mail card -->
+  <rect x="268" y="176" width="104" height="64" rx="10" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.2"/>
+  <rect x="278" y="186" width="84" height="18" rx="6" fill="#EAF0FF"/>
+  <g fill="#E4E7EA">
+    <rect x="278" y="212" width="70" height="7" rx="3.5"/>
+    <rect x="278" y="226" width="54" height="7" rx="3.5"/>
+  </g>
+
+  <!-- calendar card -->
+  <rect x="268" y="248" width="104" height="64" rx="10" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.2"/>
+  <rect x="278" y="258" width="84" height="18" rx="6" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1"/>
+  <rect x="284" y="262" width="12" height="10" rx="2" fill="#3869DC"/>
+  <g fill="#E4E7EA">
+    <rect x="302" y="262" width="10" height="10" rx="2"/>
+    <rect x="318" y="262" width="10" height="10" rx="2"/>
+    <rect x="334" y="262" width="12" height="10" rx="2"/>
+  </g>
+  <rect x="278" y="294" width="84" height="7" rx="3.5" fill="#E4E7EA"/>
+
+  <!-- gesture bar -->
+  <rect x="300" y="362" width="40" height="4" rx="2" fill="#B9C0C9"/>
+
+  <text x="36" y="432" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" letter-spacing="0.22em" fill="#6B7078">PLATFORM·ANDROID</text>
+  <text x="36" y="456" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#17191C">Future mobile release</text>
+</svg>

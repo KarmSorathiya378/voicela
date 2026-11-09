@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="720" viewBox="0 0 1000 720" role="img" aria-label="A spoken request resolves into mail, calendar and file actions">
+  <title>Voicela hero: voice resolving into app actions</title>
+  <defs>
+    <pattern id="cal-grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <rect width="30" height="30" fill="#F1F2F4"/>
+      <rect x="1" y="1" width="28" height="28" rx="4" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="paper-fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F7F7F4"/>
+      <stop offset="1" stop-color="#F5F5F2"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1000" height="720" fill="url(#paper-fade)"/>
+
+  <!-- Eyebrow label -->
+  <text x="64" y="120" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" letter-spacing="0.24em" fill="#6B7078">VOICE&#160;→&#160;ACTION</text>
+
+  <!-- Voice capsule -->
+  <g>
+    <rect x="64" y="300" width="300" height="84" rx="18" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.5"/>
+    <circle cx="44" cy="342" r="6" fill="#3869DC"/>
+    <g fill="#17191C" opacity="0.85">
+      <rect x="76" y="330" width="6" height="24" rx="3"/>
+      <rect x="86" y="324" width="6" height="36" rx="3"/>
+      <rect x="96" y="332" width="6" height="20" rx="3"/>
+      <rect x="106" y="322" width="6" height="40" rx="3"/>
+      <rect x="116" y="328" width="6" height="28" rx="3"/>
+      <rect x="126" y="326" width="6" height="32" rx="3"/>
+      <rect x="136" y="330" width="6" height="24" rx="3"/>
+    </g>
+    <text x="158" y="348" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="650" fill="#17191C">Next instruction</text>
+    <text x="80" y="410" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#6B7078">spoken · typed · approved</text>
+  </g>
+
+  <!-- Signal ribbon -->
+  <g fill="none" stroke="#3869DC" stroke-width="3" stroke-linecap="round">
+    <path d="M364 342 H500"/>
+  </g>
+  <path d="M492 334 L506 342 L492 350 Z" fill="#3869DC"/>
+
+  <!-- Node + fan-out connectors -->
+  <circle cx="540" cy="342" r="5" fill="#3869DC"/>
+  <g fill="none" stroke="#AEB6C2" stroke-width="1.5" stroke-linecap="round">
+    <path d="M545 338 L650 185"/>
+    <path d="M545 342 L650 342"/>
+    <path d="M545 346 L650 500"/>
+  </g>
+  <g fill="#3869DC">
+    <circle cx="648" cy="185" r="4"/>
+    <circle cx="648" cy="342" r="4"/>
+    <circle cx="648" cy="500" r="4"/>
+  </g>
+
+  <!-- Mail card -->
+  <g>
+    <rect x="650" y="95" width="270" height="180" rx="14" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.2"/>
+    <rect x="672" y="117" width="34" height="34" rx="8" fill="#EAF0FF"/>
+    <g fill="none" stroke="#3869DC" stroke-width="1.8" stroke-linejoin="round">
+      <rect x="681" y="126" width="16" height="12" rx="2"/>
+      <path d="M681 127 L689 133 L697 127"/>
+    </g>
+    <text x="720" y="137" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="17" font-weight="650" fill="#17191C">Mail</text>
+    <text x="720" y="154" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#6B7078">draft the reply</text>
+    <g fill="#E4E7EA">
+      <rect x="672" y="178" width="220" height="8" rx="4"/>
+      <rect x="672" y="196" width="150" height="8" rx="4"/>
+      <rect x="672" y="214" width="190" height="8" rx="4"/>
+    </g>
+    <rect x="672" y="236" width="122" height="22" rx="6" fill="#EAF0FF"/>
+    <rect x="672" y="241" width="80" height="5" rx="2.5" fill="#3869DC" opacity="0.75"/>
+  </g>
+
+  <!-- Calendar card -->
+  <g>
+    <rect x="650" y="300" width="270" height="180" rx="14" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.2"/>
+    <text x="672" y="326" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="17" font-weight="650" fill="#17191C">Calendar</text>
+    <text x="745" y="326" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#6B7078">find a time</text>
+    <text x="672" y="354" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#6B7078" letter-spacing="1.5">S&#160;&#160;M&#160;&#160;T&#160;&#160;W&#160;&#160;T&#160;&#160;F&#160;&#160;S</text>
+    <rect x="672" y="362" width="224" height="104" fill="url(#cal-grid)"/>
+    <rect x="732" y="392" width="28" height="28" rx="4" fill="#3869DC"/>
+    <rect x="822" y="362" width="28" height="28" rx="4" fill="#EAF0FF"/>
+  </g>
+
+  <!-- Files card -->
+  <g>
+    <rect x="650" y="505" width="270" height="180" rx="14" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.2"/>
+    <rect x="672" y="527" width="34" height="34" rx="8" fill="#EAF0FF"/>
+    <g fill="none" stroke="#3869DC" stroke-width="1.8" stroke-linejoin="round">
+      <path d="M682 532 h9 a3 3 0 0 1 3 3 v14 a3 3 0 0 1 -3 3 h-9 a3 3 0 0 1 -3 -3 v-14 a3 3 0 0 1 3 -3 h4 l2 3 h5"/>
+    </g>
+    <text x="720" y="547" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="17" font-weight="650" fill="#17191C">Files</text>
+    <text x="720" y="564" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#6B7078">find the brief</text>
+    <rect x="672" y="578" width="224" height="88" rx="8" fill="#FBFBFA" stroke="#D9DCDF" stroke-width="1"/>
+    <g fill="#E7EAED">
+      <rect x="688" y="594" width="150" height="8" rx="4"/>
+      <rect x="688" y="610" width="192" height="8" rx="4"/>
+      <rect x="688" y="626" width="120" height="8" rx="4"/>
+    </g>
+    <rect x="688" y="642" width="92" height="20" rx="6" fill="#EAF0FF"/>
+    <rect x="688" y="647" width="60" height="5" rx="2.5" fill="#3869DC" opacity="0.7"/>
+  </g>
+
+  <!-- Baseline + wordmark -->
+  <line x1="64" y1="690" x2="936" y2="690" stroke="#D9DCDF" stroke-width="1.2"/>
+  <text x="64" y="678" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="21" font-weight="700" letter-spacing="-0.02em" fill="#17191C">voicela</text>
+  <circle cx="196" cy="671" r="4.5" fill="#3869DC"/>
+</svg>

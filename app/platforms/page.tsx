@@ -48,6 +48,14 @@ export default function PlatformsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-1 flex-col items-start gap-6">
+                  <img
+                    src={`/images/platform-${platform.slug}.svg`}
+                    alt={`Voicela on ${platform.name} — platform tile`}
+                    width={640}
+                    height={480}
+                    loading="lazy"
+                    className="w-full rounded-lg border border-border"
+                  />
                   <p className="flex-1 leading-relaxed">{platform.summary}</p>
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/platforms/${platform.slug}`}>

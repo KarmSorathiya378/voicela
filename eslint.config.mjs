@@ -27,6 +27,15 @@ const eslintConfig = defineConfig([
       "@typescript-eslint/no-unused-vars": "off",
     },
   },
+  // Standalone Node asset tooling (scripts/**) uses CJS require().
+  {
+    files: ["scripts/**/*.js"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-var-requires": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

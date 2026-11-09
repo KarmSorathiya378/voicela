@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>Voicela icon</title>
+  <rect x="0" y="0" width="512" height="512" rx="104" fill="#111318"/>
+  <circle cx="236" cy="256" r="48" fill="#3869DC"/>
+  <g fill="#FFFFFF" opacity="0.85">
+    <rect x="314" y="244" width="12" height="24" rx="6"/>
+    <rect x="336" y="236" width="12" height="40" rx="6"/>
+    <rect x="358" y="226" width="12" height="60" rx="6"/>
+  </g>
+</svg>

@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" role="img" aria-label="Voicela on iOS — phone tile illustration">
+  <title>Voicela · iOS platform tile</title>
+  <defs>
+    <linearGradient id="ios-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F7F7F4"/>
+      <stop offset="1" stop-color="#F5F5F2"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="480" fill="url(#ios-bg)"/>
+
+  <!-- side buttons -->
+  <rect x="402" y="150" width="6" height="40" rx="3" fill="#B9C0C9"/>
+  <rect x="232" y="130" width="6" height="50" rx="3" fill="#B9C0C9"/>
+
+  <!-- body (light steel) -->
+  <rect x="240" y="70" width="160" height="330" rx="38" fill="#C7CDD4" stroke="#B0B7C0" stroke-width="1.2"/>
+  <!-- screen -->
+  <rect x="252" y="82" width="136" height="306" rx="26" fill="#F7F8FA" stroke="#E4E7EA" stroke-width="1"/>
+  <!-- Dynamic Island -->
+  <rect x="296" y="92" width="48" height="15" rx="7.5" fill="#17191C"/>
+
+  <!-- label -->
+  <text x="320" y="138" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="650" fill="#17191C">voicela</text>
+
+  <!-- waveform -->
+  <g fill="#3869DC">
+    <rect x="280" y="174" width="5" height="10" rx="2.5"/>
+    <rect x="288" y="168" width="5" height="18" rx="2.5"/>
+    <rect x="296" y="160" width="5" height="26" rx="2.5"/>
+    <rect x="304" y="168" width="5" height="18" rx="2.5"/>
+    <rect x="312" y="154" width="5" height="32" rx="2.5"/>
+    <rect x="320" y="164" width="5" height="22" rx="2.5"/>
+    <rect x="328" y="152" width="5" height="34" rx="2.5"/>
+    <rect x="336" y="164" width="5" height="22" rx="2.5"/>
+    <rect x="344" y="158" width="5" height="28" rx="2.5"/>
+    <rect x="352" y="170" width="5" height="16" rx="2.5"/>
+    <rect x="360" y="176" width="5" height="12" rx="2.5"/>
+  </g>
+  <text x="320" y="212" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#6B7078">hold to talk</text>
+
+  <!-- suggestion chips -->
+  <g>
+    <rect x="272" y="236" width="56" height="30" rx="15" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.2"/>
+    <circle cx="284" cy="251" r="4" fill="#3869DC"/>
+    <text x="295" y="255" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#17191C">Mail</text>
+    <rect x="336" y="236" width="56" height="30" rx="15" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.2"/>
+    <circle cx="348" cy="251" r="4" fill="#3869DC"/>
+    <text x="359" y="255" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#17191C">Files</text>
+  </g>
+  <rect x="274" y="280" width="92" height="56" rx="12" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.2"/>
+  <g fill="#E4E7EA">
+    <rect x="284" y="290" width="72" height="7" rx="3.5"/>
+    <rect x="284" y="304" width="56" height="7" rx="3.5"/>
+  </g>
+  <rect x="284" y="320" width="60" height="10" rx="4" fill="#EAF0FF"/>
+
+  <!-- home indicator -->
+  <rect x="300" y="364" width="40" height="5" rx="2.5" fill="#B9C0C9"/>
+
+  <text x="36" y="432" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" letter-spacing="0.22em" fill="#6B7078">PLATFORM·IOS</text>
+  <text x="36" y="456" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#17191C">Future mobile release</text>
+</svg>

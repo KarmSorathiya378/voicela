@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" role="img" aria-label="Voicela on Linux — terminal tile illustration">
+  <title>Voicela · Linux platform tile</title>
+  <defs>
+    <linearGradient id="lnx-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F7F7F4"/>
+      <stop offset="1" stop-color="#F5F5F2"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="480" fill="url(#lnx-bg)"/>
+
+  <!-- monitor frame -->
+  <rect x="140" y="104" width="300" height="196" rx="12" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.6"/>
+  <!-- terminal screen -->
+  <rect x="154" y="118" width="272" height="168" rx="6" fill="#111318"/>
+  <rect x="154" y="118" width="272" height="26" rx="6" fill="#1B1E25"/>
+  <circle cx="168" cy="131" r="4" fill="#6B7078"/>
+  <circle cx="180" cy="131" r="4" fill="#6B7078"/>
+  <circle cx="192" cy="131" r="4" fill="#3869DC"/>
+  <text x="172" y="158" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" fill="#AEB8C4">$ add meeting to calendar</text>
+  <text x="190" y="182" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" fill="#7C8692">› reading calendar…</text>
+  <text x="190" y="206" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" fill="#8FB0F0">✓ found Friday 2pm slot</text>
+  <text x="190" y="230" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" fill="#7C8692">→ waiting for your approval</text>
+  <rect x="266" y="250" width="120" height="18" rx="5" fill="#1B1E25" stroke="#3869DC" stroke-width="1"/>
+
+  <!-- stand -->
+  <rect x="278" y="300" width="24" height="40" fill="#D9DCDF"/>
+  <rect x="232" y="340" width="116" height="13" rx="6.5" fill="#C7CDD4"/>
+
+  <!-- floating accent chip (distro-neutral) -->
+  <rect x="440" y="120" width="120" height="120" rx="12" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.4"/>
+  <rect x="452" y="132" width="96" height="22" rx="6" fill="#EAF0FF"/>
+  <rect x="462" y="139" width="40" height="6" rx="3" fill="#3869DC" opacity="0.7"/>
+  <g fill="#E4E7EA">
+    <rect x="452" y="164" width="80" height="7" rx="3.5"/>
+    <rect x="452" y="178" width="64" height="7" rx="3.5"/>
+    <rect x="452" y="192" width="72" height="7" rx="3.5"/>
+  </g>
+  <rect x="452" y="210" width="84" height="20" rx="6" fill="#EAF0FF"/>
+  <rect x="462" y="217" width="52" height="5" rx="2.5" fill="#3869DC" opacity="0.75"/>
+
+  <text x="36" y="432" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" letter-spacing="0.22em" fill="#6B7078">PLATFORM·LINUX</text>
+  <text x="36" y="456" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#17191C">Compatibility research</text>
+</svg>

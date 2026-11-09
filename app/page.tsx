@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, Check, Monitor, Smartphone } from "lucide-react";
+import { ArrowUpRight, Check, Monitor, ShieldCheck, Smartphone } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Container } from "@/components/ui/container";
@@ -27,6 +27,7 @@ export const metadata: Metadata = {
     title: "Voicela — Less clicking. More doing.",
     description,
     type: "website",
+    images: ["/og/og-1200x630.png"],
   },
 };
 const platforms = [
@@ -92,6 +93,14 @@ export default function Home() {
               <span>Your intent. A clear path forward.</span>
               <span>Browser simulation · no device access</span>
             </div>
+            <img
+              src="/images/hero-stage.svg"
+              alt="A spoken request resolves into mail, calendar and file actions"
+              width={1000}
+              height={720}
+              loading="lazy"
+              className="mt-12 w-full max-w-[1000px] self-center"
+            />
           </section>
         </Container>
         <Section

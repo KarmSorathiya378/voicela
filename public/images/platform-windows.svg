@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" role="img" aria-label="Voicela on Windows — desktop tile illustration">
+  <title>Voicela · Windows platform tile</title>
+  <defs>
+    <linearGradient id="win-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F7F7F4"/>
+      <stop offset="1" stop-color="#F5F5F2"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="480" fill="url(#win-bg)"/>
+
+  <!-- Monitor -->
+  <rect x="150" y="104" width="340" height="208" rx="14" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.6"/>
+  <rect x="166" y="120" width="308" height="176" rx="8" fill="#FBFBFA" stroke="#E4E7EA" stroke-width="1"/>
+  <!-- window content -->
+  <rect x="184" y="138" width="120" height="74" rx="8" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.2"/>
+  <rect x="184" y="138" width="120" height="22" rx="8" fill="#EAF0FF"/>
+  <g fill="#E4E7EA">
+    <rect x="194" y="172" width="84" height="7" rx="3.5"/>
+    <rect x="194" y="186" width="64" height="7" rx="3.5"/>
+    <rect x="194" y="200" width="76" height="7" rx="3.5"/>
+  </g>
+  <rect x="326" y="138" width="130" height="74" rx="8" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.2"/>
+  <rect x="326" y="138" width="130" height="22" rx="8" fill="#FFFFFF"/>
+  <rect x="336" y="146" width="40" height="7" rx="3.5" fill="#3869DC" opacity="0.6"/>
+  <rect x="336" y="172" width="96" height="7" rx="3.5" fill="#E4E7EA"/>
+  <rect x="336" y="186" width="72" height="7" rx="3.5" fill="#E4E7EA"/>
+  <rect x="336" y="200" width="88" height="7" rx="3.5" fill="#E4E7EA"/>
+  <rect x="184" y="228" width="272" height="38" rx="8" fill="#EAF0FF"/>
+  <rect x="196" y="241" width="120" height="6" rx="3" fill="#3869DC" opacity="0.85"/>
+  <rect x="196" y="253" width="84" height="5" rx="2.5" fill="#3869DC" opacity="0.45"/>
+  <!-- taskbar -->
+  <rect x="166" y="272" width="308" height="24" rx="8" fill="#EEF0F3"/>
+  <g fill="#C7CDD4">
+    <rect x="180" y="280" width="10" height="8" rx="2"/>
+    <rect x="196" y="280" width="10" height="8" rx="2"/>
+    <rect x="212" y="280" width="10" height="8" rx="2"/>
+  </g>
+  <rect x="420" y="280" width="14" height="8" rx="2" fill="#3869DC"/>
+  <!-- stand -->
+  <rect x="310" y="312" width="20" height="36" fill="#D9DCDF"/>
+  <rect x="258" y="348" width="124" height="14" rx="7" fill="#C7CDD4"/>
+
+  <!-- Desktop tower -->
+  <rect x="520" y="176" width="80" height="186" rx="10" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.6"/>
+  <rect x="534" y="194" width="52" height="86" rx="6" fill="#FBFBFA" stroke="#E4E7EA" stroke-width="1"/>
+  <g fill="#E4E7EA">
+    <rect x="542" y="204" width="36" height="6" rx="3"/>
+    <rect x="542" y="216" width="36" height="6" rx="3"/>
+    <rect x="542" y="228" width="28" height="6" rx="3"/>
+    <rect x="542" y="240" width="36" height="6" rx="3"/>
+    <rect x="542" y="252" width="24" height="6" rx="3"/>
+  </g>
+  <rect x="534" y="292" width="52" height="6" rx="3" fill="#C7CDD4"/>
+  <circle cx="586" cy="350" r="4" fill="#3869DC"/>
+  <rect x="534" y="326" width="52" height="16" rx="6" fill="#EAF0FF"/>
+
+  <!-- label -->
+  <text x="36" y="432" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" letter-spacing="0.22em" fill="#6B7078">PLATFORM·WINDOWS</text>
+  <text x="36" y="456" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#17191C">First desktop release · planned</text>
+</svg>

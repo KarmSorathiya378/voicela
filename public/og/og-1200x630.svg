@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Voicela — Say what you need. Watch it happen.">
+  <title>Voicela open graph share card</title>
+  <rect width="1200" height="630" fill="#F5F5F2"/>
+
+  <!-- Wordmark -->
+  <text x="80" y="96" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="34" font-weight="700" letter-spacing="-0.03em" fill="#17191C">voicela</text>
+  <circle cx="208" cy="84" r="7" fill="#3869DC"/>
+
+  <!-- Headline -->
+  <text x="80" y="252" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="68" font-weight="620" letter-spacing="-0.035em" fill="#17191C">Say what you need.</text>
+  <text x="80" y="344" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="68" font-weight="620" letter-spacing="-0.035em" fill="#17191C">Watch it happen.</text>
+  <rect x="82" y="372" width="300" height="7" rx="3.5" fill="#3869DC"/>
+
+  <!-- Sub-copy -->
+  <text x="80" y="432" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="450" fill="#6B7078">A voice-first layer for your computer.</text>
+  <text x="80" y="470" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="450" fill="#6B7078">Speak naturally. See the work happen.</text>
+
+  <!-- Right editorial detail -->
+  <line x1="1060" y1="150" x2="1060" y2="470" stroke="#D9DCDF" stroke-width="2"/>
+  <line x1="1060" y1="150" x2="1060" y2="300" stroke="#3869DC" stroke-width="2"/>
+  <circle cx="1060" cy="330" r="5" fill="#3869DC"/>
+  <circle cx="1060" cy="356" r="5" fill="#EAF0FF" stroke="#C7D4F0" stroke-width="1.5"/>
+  <circle cx="1060" cy="382" r="5" fill="#EAF0FF" stroke="#C7D4F0" stroke-width="1.5"/>
+  <rect x="1016" y="420" width="112" height="132" rx="10" fill="#FFFFFF" stroke="#D9DCDF" stroke-width="1.4"/>
+  <g fill="#E4E7EA">
+    <rect x="1030" y="438" width="84" height="8" rx="4"/>
+    <rect x="1030" y="454" width="60" height="8" rx="4"/>
+    <rect x="1030" y="470" width="76" height="8" rx="4"/>
+  </g>
+  <rect x="1030" y="490" width="84" height="22" rx="6" fill="#EAF0FF"/>
+  <rect x="1030" y="495" width="54" height="5" rx="2.5" fill="#3869DC" opacity="0.75"/>
+
+  <!-- Bottom hairline + footer -->
+  <line x1="80" y1="560" x2="1120" y2="560" stroke="#D9DCDF" stroke-width="1.2"/>
+  <text x="80" y="592" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="600" fill="#17191C">voicela</text>
+  <circle cx="152" cy="587" r="3.5" fill="#3869DC"/>
+  <text x="172" y="592" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="15" fill="#6B7078">Less clicking. More doing.</text>
+</svg>
