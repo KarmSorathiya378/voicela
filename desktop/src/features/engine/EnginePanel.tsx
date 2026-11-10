@@ -7,17 +7,18 @@ const label = (value: string) => value.replace(/[_-]/g, " ");
 
 export function EnginePanel({ engine }: { engine: IntentEngineBinding }) {
   const { plan, controller, notice, busy, audit } = engine;
-  const done = plan?.steps.filter(step => step.status === "simulated").length ?? 0;
+  const done = plan?.steps.filter(step => step.status === "executed" || step.status === "simulated").length ?? 0;
   const desktop = isTauri();
+  const savesNote = plan?.approval?.request.tool === "create_note";
   return <section className="intent-engine" aria-labelledby="engine-title">
     <div className="section-title"><h2 id="engine-title">Action plan</h2>
       {plan && <span className="state" role="status" aria-live="polite">{label(plan.status)}</span>}</div>
-    <p>Review each step before running. Current adapters simulate requests; they do not perform OS or service actions.</p>
+    <p>Review each step before running. Notes save to local activity history after approval. Other tools run as simulations.</p>
     {!desktop && <p className="notice">Browser preview: you can prepare a plan. Running and approval require the Windows desktop app.</p>}
     {notice && <p className={plan?.status === "error" ? "error" : "notice"} role={plan?.status === "error" ? "alert" : "status"}>{notice}</p>}
     {plan ? <>
       <p className="engine-transcript">{plan.transcript}</p>
-      <label htmlFor="engine-progress">{done} of {plan.steps.length} steps returned simulated results</label>
+      <label htmlFor="engine-progress">{done} of {plan.steps.length} steps finished</label>
       <progress id="engine-progress" value={done} max={plan.steps.length} />
       <ol className="engine-steps">{plan.steps.map((step, index) => <li key={index}>
         <div className="section-title"><strong>{label(step.request.tool)}</strong><span className="badge">{label(step.status)}</span></div>
@@ -34,9 +35,9 @@ export function EnginePanel({ engine }: { engine: IntentEngineBinding }) {
         <h3 id="engine-approval-title">Approval required: {label(plan.approval.request.tool)}</h3>
         <p>{plan.approval.intent}</p>
         <pre>{JSON.stringify(plan.approval.request, null, 2)}</pre>
-        <p>Approve this exact request once. The current adapter is simulated; no action has been executed. Cancel stops the remaining plan.</p>
+        <p>{savesNote ? "Approval saves this note on this device. Clearing local history deletes it." : "Approval runs a simulation."} Cancel stops the remaining plan.</p>
         {plan.status === "paused" && <p>Plan paused. Resume to review this approval; resuming does not approve it.</p>}
-        <div className="actions"><button disabled={busy || !desktop || plan.status !== "awaiting-approval"} onClick={() => void controller.approve()}>Approve simulation</button>
+        <div className="actions"><button disabled={busy || !desktop || plan.status !== "awaiting-approval"} onClick={() => void controller.approve()}>{savesNote ? "Approve and save note" : "Approve simulation"}</button>
           <button className="secondary" disabled={busy || !desktop} onClick={() => void controller.cancel()}>Cancel</button></div>
       </div>}
     </> : <p className="empty">Submit reviewed text from the speech panel to prepare your first plan.</p>}

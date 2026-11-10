@@ -6,6 +6,16 @@ import { StateIndicator } from './StateIndicator';
 import { Icon } from './Icon';
 import './shell.css';
 
+function savedNote(entry: ActivityEntry): { title: string; body: string } | null {
+  if (entry.tool !== 'create_note' || !['executed', 'client_note'].includes(entry.status)) return null;
+  try {
+    const note = JSON.parse(entry.intent);
+    return note && typeof note.title === 'string' && typeof note.body === 'string' ? note : null;
+  } catch {
+    return null;
+  }
+}
+
 export interface AppShellProps { speechPanel?: ReactNode; enginePanel?: ReactNode; state?: AppState }
 export default function AppShell({ speechPanel, enginePanel, state }: AppShellProps) {
   const desktop = isTauri();
@@ -50,7 +60,10 @@ export default function AppShell({ speechPanel, enginePanel, state }: AppShellPr
       <footer className="vs-footer"><Icon name="shield" size={15} />Explicit requests. Visible results. You stay in control.</footer>
     </main>
     <aside className="vs-activity" aria-labelledby="vs-activity-title"><div className="vs-activity-heading"><h2 id="vs-activity-title"><Icon name="history" />Activity</h2><button className="vs-text-button" disabled={!desktop || loading} onClick={() => void refresh().catch(reason => setError(String(reason)))}>Refresh</button></div><p className="vs-caption">Local SQLite history. Intent text is stored; tool payloads are excluded except notes you explicitly save here.</p>
-      {loading ? <p className="vs-empty" role="status">Connecting to local history…</p> : entries.length ? <ol className="vs-feed">{entries.map(entry => <li key={entry.id}><div className="vs-feed-heading"><strong>{entry.tool.replace(/_/g, ' ')}</strong><time dateTime={entry.timestamp}>{new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</time></div><p>{entry.intent}</p><span className={`vs-badge ${entry.status === 'denied' ? 'vs-tone-red' : ''}`}>{entry.status.replace(/_/g, ' ')}</span></li>)}</ol> : <div className="vs-empty"><Icon name="history" size={30} /><h3>{desktop ? 'A clean slate.' : 'History lives on your PC.'}</h3><p>{desktop ? 'Your tool requests and saved notes will appear here.' : 'Open the desktop app to read your local activity.'}</p></div>}
+      {loading ? <p className="vs-empty" role="status">Connecting to local history…</p> : entries.length ? <ol className="vs-feed">{entries.map(entry => {
+        const note = savedNote(entry);
+        return <li key={entry.id}><div className="vs-feed-heading"><strong>{note?.title ?? entry.tool.replace(/_/g, ' ')}</strong><time dateTime={entry.timestamp}>{new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</time></div><p>{note?.body ?? entry.intent}</p><span className={`vs-badge ${entry.status === 'denied' ? 'vs-tone-red' : ''}`}>{note ? 'Saved note' : entry.status.replace(/_/g, ' ')}</span></li>;
+      })}</ol> : <div className="vs-empty"><Icon name="history" size={30} /><h3>{desktop ? 'A clean slate.' : 'History lives on your PC.'}</h3><p>{desktop ? 'Your tool requests and saved notes will appear here.' : 'Open the desktop app to read your local activity.'}</p></div>}
       <details className="vs-history-settings"><summary>History & storage</summary><p className="vs-caption">Clearing history permanently removes all activity and notes saved to this history. Resolve any pending approval first.</p><button className="vs-secondary" disabled={!desktop || !entries.length || !!snapshot?.pending_approval || clearing} onClick={() => void clearHistory()}>{clearing ? 'Clearing…' : 'Clear local history'}</button></details>
       <div className="vs-storage"><span className={`vs-connection-dot ${snapshot ? 'is-connected' : ''}`} />{snapshot ? 'Connected to desktop core' : 'Desktop core disconnected'}</div>
     </aside></div>

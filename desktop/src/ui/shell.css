@@ -100,9 +100,9 @@ body { margin: 0; min-width: 360px; }
 .vs-feed { list-style: none; margin: 22px 0; padding: 0; }
 .vs-feed li { padding: 18px 0; border-top: 1px solid #d5d8d9; }
 .vs-feed-heading { display: flex; justify-content: space-between; gap: 10px; }
-.vs-feed-heading strong { font-weight: 600; font-size: 12px; text-transform: capitalize; }
+.vs-feed-heading strong { font-weight: 600; font-size: 12px; overflow-wrap: anywhere; }
 .vs-feed time { color: #59616d; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.vs-feed li p { white-space: pre-wrap; font-size: 12px; margin: 8px 0 10px; }
+.vs-feed li p { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; margin: 8px 0 10px; }
 .vs-history-settings { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--vs-line); }
 .vs-history-settings summary { font-size: 12px; cursor: pointer; padding: 8px 0; }
 .vs-history-settings p { margin: 8px 0 12px; }

@@ -1,3 +1,4 @@
+use crate::activity_log::{ActivityLog, ActivityStatus};
 use crate::permission::{Permission, policy};
 use schemars::{JsonSchema, schema_for};
 use serde::{Deserialize, Serialize};
@@ -72,10 +73,11 @@ impl ToolInput {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum ExecutionStatus {
     Simulated,
+    Executed,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -98,7 +100,7 @@ pub struct ToolDescriptor {
 
 pub trait Tool: Send + Sync {
     fn descriptor(&self) -> ToolDescriptor;
-    fn execute(&self, input: &ToolInput) -> Result<ToolOutput, String>;
+    fn execute(&self, input: &ToolInput, log: &ActivityLog) -> Result<ToolOutput, String>;
 }
 
 struct SimulatedTool {
@@ -118,7 +120,7 @@ impl Tool for SimulatedTool {
                 .expect("schema serialization"),
         }
     }
-    fn execute(&self, input: &ToolInput) -> Result<ToolOutput, String> {
+    fn execute(&self, input: &ToolInput, _log: &ActivityLog) -> Result<ToolOutput, String> {
         if input.name() != self.name {
             return Err("Tool input does not match adapter".into());
         }
@@ -131,6 +133,39 @@ impl Tool for SimulatedTool {
                 "Simulated {:?}: OS/service integration is not implemented. No action was executed.",
                 self.name
             ),
+        })
+    }
+}
+
+struct CreateNoteTool;
+
+impl Tool for CreateNoteTool {
+    fn descriptor(&self) -> ToolDescriptor {
+        ToolDescriptor {
+            name: ToolName::CreateNote,
+            description: "Save a note in Voicela's local history",
+            permission: policy(ToolName::CreateNote),
+            implementation: "local",
+            input_schema: serde_json::to_value(schema_for!(CreateNoteInput))
+                .expect("schema serialization"),
+            output_schema: serde_json::to_value(schema_for!(ToolOutput))
+                .expect("schema serialization"),
+        }
+    }
+
+    fn execute(&self, input: &ToolInput, log: &ActivityLog) -> Result<ToolOutput, String> {
+        let ToolInput::CreateNote(note) = input else {
+            return Err("Tool input does not match adapter".into());
+        };
+        input.validate()?;
+        let content = serde_json::to_string(note).map_err(|error| error.to_string())?;
+        // The saved note is the execution record. One insert commits both together.
+        log.append(ToolName::CreateNote, &content, ActivityStatus::Executed)?;
+        Ok(ToolOutput {
+            tool: ToolName::CreateNote,
+            status: ExecutionStatus::Executed,
+            executed: true,
+            message: "Note saved in Voicela's local activity history.".into(),
         })
     }
 }
@@ -154,7 +189,7 @@ impl Default for ToolRegistry {
             tools: vec![
                 stub!(OpenApp, OpenAppInput, "Open an allowlisted app"),
                 stub!(FindFile, FindFileInput, "Find a file in a consented scope"),
-                stub!(CreateNote, CreateNoteInput, "Prepare a local note"),
+                Box::new(CreateNoteTool),
                 stub!(
                     CalendarEvent,
                     CalendarEventInput,

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { api, sampleRequests, type StateSnapshot, type ToolDescriptor, type ToolInput, type ToolName } from '../../api';
-import { findFiles, runPlatformTool, saveNoteToHistory } from './adapters';
+import { findFiles, runPlatformTool } from './adapters';
 import { Icon } from '../../ui/Icon';
 
 const names: Record<ToolName, string> = { open_app: 'Open app', find_file: 'Find file', create_note: 'Create note', calendar_event: 'Calendar event', draft_message: 'Draft message', browser_search: 'Browser search' };
@@ -23,6 +23,7 @@ export function ToolRegistry({ tools, snapshot, desktop, onRefresh, engineMounte
   const pending = snapshot?.pending_approval;
   const localSearch = selected === 'find_file';
   const localNote = selected === 'create_note';
+  const approvingNote = pending?.request.tool === 'create_note';
   const fields = inputs[selected];
 
   async function perform(action: () => Promise<unknown>, tool: ToolName, input: unknown) {
@@ -51,15 +52,15 @@ export function ToolRegistry({ tools, snapshot, desktop, onRefresh, engineMounte
       <div className="vs-tool-detail">
         <div className="vs-detail-title"><h3>{names[selected]}</h3><span className="vs-badge">{localSearch ? 'Simulated files' : localNote ? 'Real local storage' : 'Simulated action'}</span></div>
         <p>{descriptions[selected]}</p>
-        <span className="vs-permission"><Icon name="shield" size={15} />{localSearch ? 'No file permission needed' : localNote ? 'Save button authorizes this local write' : descriptor ? descriptor.permission.requires_approval ? 'Rust approval required for every request' : 'No approval required' : 'Permission policy available in desktop app'}</span>
-        <form onSubmit={event => { event.preventDefault(); const request = { tool: selected, input: fields } as ToolInput; void perform(async () => localSearch ? { status: 'simulated', executed: false, results: findFiles(fields.query), message: 'Sample index only. No disk search was performed.' } : localNote ? saveNoteToHistory(fields.title, fields.body) : runPlatformTool(request), selected, request.input); }}>
+        <span className="vs-permission"><Icon name="shield" size={15} />{localSearch ? 'No file permission needed' : descriptor ? descriptor.permission.requires_approval ? 'Rust approval required for every request' : 'No approval required' : 'Permission policy available in desktop app'}</span>
+        <form onSubmit={event => { event.preventDefault(); const request = { tool: selected, input: fields } as ToolInput; void perform(async () => localSearch ? { status: 'simulated', executed: false, results: findFiles(fields.query), message: 'Sample index only. No disk search was performed.' } : runPlatformTool(request), selected, request.input); }}>
           {Object.entries(fields).map(([key, value]) => <label key={`${selected}-${key}`} htmlFor={`vs-tool-${key}`}><span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>{key === 'body' ? <textarea id={`vs-tool-${key}`} rows={4} required maxLength={1500} value={value} onChange={event => setInputs(previous => ({ ...previous, [selected]: { ...previous[selected], [key]: event.target.value } }))} /> : key === 'app' ? <select id="vs-tool-app" value={value} onChange={event => setInputs(previous => ({ ...previous, open_app: { app: event.target.value } }))}><option>Notepad</option><option>Calculator</option><option>Paint</option></select> : <input id={`vs-tool-${key}`} required maxLength={1500} value={value} onChange={event => setInputs(previous => ({ ...previous, [selected]: { ...previous[selected], [key]: event.target.value } }))} />}</label>)}
-          {localNote && <p className="vs-caption">Title and text are stored in activity.sqlite3 as a client note. Clearing history deletes them. This does not create a separate file.</p>}
-          <button className="vs-primary" disabled={busy || (!localSearch && (!desktop || !snapshot || !!pending || !descriptor?.permission.enabled))} type="submit">{busy ? 'Working…' : localSearch ? 'Search sample files' : localNote ? 'Save note to SQLite' : 'Request simulation'}<Icon name="arrow" size={16} /></button>
+          {localNote && <p className="vs-caption">Approval saves the title and text to local activity history. Clearing history deletes the note.</p>}
+          <button className="vs-primary" disabled={busy || (!localSearch && (!desktop || !snapshot || !!pending || !descriptor?.permission.enabled))} type="submit">{busy ? 'Working…' : localSearch ? 'Search sample files' : localNote ? 'Review note' : 'Request simulation'}<Icon name="arrow" size={16} /></button>
         </form>
       </div>
     </div>
-    {pending && (!engineMounted || pending.id === approvalId) && <section className="vs-approval" aria-labelledby="vs-approval-title"><h3 id="vs-approval-title"><Icon name="shield" /> Review pending request</h3><p>{pending.intent}</p><pre>{JSON.stringify(pending.request, null, 2)}</pre><p>One-time approval. This foundation adapter is simulated; no OS or service action will occur.</p><div className="vs-actions"><button className="vs-primary" disabled={busy} onClick={() => void perform(() => api.approveTool(pending.id, true), pending.request.tool, pending.request.input)}>Approve simulation</button><button className="vs-secondary" disabled={busy} onClick={() => void perform(() => api.approveTool(pending.id, false), pending.request.tool, pending.request.input)}>Decline</button></div></section>}
+    {pending && (!engineMounted || pending.id === approvalId) && <section className="vs-approval" aria-labelledby="vs-approval-title"><h3 id="vs-approval-title"><Icon name="shield" /> Review pending request</h3><p>{pending.intent}</p><pre>{JSON.stringify(pending.request, null, 2)}</pre><p>{approvingNote ? "Approval saves this note on this device." : "Approval runs a simulation."}</p><div className="vs-actions"><button className="vs-primary" disabled={busy} onClick={() => void perform(() => api.approveTool(pending.id, true), pending.request.tool, pending.request.input)}>{approvingNote ? "Approve and save note" : "Approve simulation"}</button><button className="vs-secondary" disabled={busy} onClick={() => void perform(() => api.approveTool(pending.id, false), pending.request.tool, pending.request.input)}>Decline</button></div></section>}
     {pending && engineMounted && pending.id !== approvalId && <p className="vs-notice">An engine request is awaiting approval. Review it in the action plan above.</p>}
     {error && <p className="vs-error" role="alert">{error}</p>}
     {result && <section className="vs-tool-result" aria-label="Latest tool input and output"><h3>{names[result.tool]} · latest result</h3><div className="vs-result-columns"><div><h4>Input</h4><pre>{JSON.stringify(result.input, null, 2)}</pre></div><div><h4>Output</h4><pre role="status">{JSON.stringify(result.output, null, 2)}</pre></div></div></section>}
