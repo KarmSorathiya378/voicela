@@ -46,18 +46,18 @@ export function useSpeech({ onPhaseChange, language = "en-US", disabled = false 
 
   const stop = useCallback(() => {
     const active = recognition.current;
-    if (!active) return;
+    if (!active || timeout.current !== undefined) return;
     changePhase("transcribing");
-    try { active.stop(); } catch { active.abort(); }
-    clearTimeout(timeout.current);
     timeout.current = setTimeout(() => {
       if (recognition.current !== active) return;
       recognition.current = null;
+      timeout.current = undefined;
       active.abort();
       setInterim("");
       changePhase("idle");
       setMessage("Speech service did not finish. Review captured text or continue typing.");
     }, 8000);
+    try { active.stop(); } catch { active.abort(); }
   }, [changePhase]);
 
   const start = useCallback(() => {
@@ -99,6 +99,7 @@ export function useSpeech({ onPhaseChange, language = "en-US", disabled = false 
         : `Speech recognition stopped (${event.error}). You can continue typing.`);
       recognition.current = null;
       clearTimeout(timeout.current);
+      timeout.current = undefined;
       active.abort();
       setInterim("");
       changePhase("idle");
@@ -107,6 +108,7 @@ export function useSpeech({ onPhaseChange, language = "en-US", disabled = false 
       if (!current()) return;
       recognition.current = null;
       clearTimeout(timeout.current);
+      timeout.current = undefined;
       setInterim("");
       changePhase("idle");
     };
@@ -147,6 +149,7 @@ export function useSpeech({ onPhaseChange, language = "en-US", disabled = false 
       recognition.current = null;
       if (active) { active.onend = null; active.onerror = null; active.onresult = null; active.abort(); }
       clearTimeout(timeout.current);
+      timeout.current = undefined;
     };
   }, []);
 

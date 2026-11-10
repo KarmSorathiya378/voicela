@@ -11,7 +11,7 @@ export type PlanStatus = "ready" | "running" | "paused" | "awaiting-approval" | 
 export interface PlanStep {
   instruction: string;
   request: ToolInput;
-  status: "pending" | "running" | "awaiting-approval" | "simulated" | "denied" | "cancelled" | "error";
+  status: "pending" | "running" | "awaiting-approval" | "simulated" | "executed" | "denied" | "cancelled" | "error";
   result?: string;
 }
 export interface Plan {
@@ -76,7 +76,7 @@ export class IntentEngine {
     const parsed = parseIntent(transcript);
     if (!parsed.supported) { this.update({ notice: parsed.message }); this.audit(`Instruction not accepted: ${parsed.message}`); return false; }
     this.stopRequested = false;
-    this.update({ notice: "Review the steps, then run the plan. All current tool adapters are simulated.",
+    this.update({ notice: "Review the steps, then run the plan.",
       plan: { transcript: parsed.transcript, status: "ready", approval: null,
         steps: parsed.actions.map(action => ({ ...action, status: "pending" })) } });
     this.audit(`Planned ${parsed.actions.length} step(s). Nothing has run.`);
@@ -110,8 +110,11 @@ export class IntentEngine {
       const index = this.view.plan!.steps.findIndex(step => step.status === "pending");
       if (index === -1) {
         this.plan({ status: "completed" });
-        this.update({ notice: "Plan review complete. All returned tool results were simulated; no OS or service action was executed." });
-        this.audit("All plan steps returned simulated results; no action executed.");
+        const executed = this.view.plan!.steps.filter(step => step.status === "executed").length;
+        const simulated = this.view.plan!.steps.length - executed;
+        const message = `Plan complete. Executed: ${executed}. Simulated: ${simulated}.`;
+        this.update({ notice: message });
+        this.audit(message);
         return;
       }
       const step = this.view.plan!.steps[index];
@@ -135,13 +138,15 @@ export class IntentEngine {
       this.audit(response.message);
       return false;
     }
-    if (response.output.executed !== false || response.output.status !== "simulated"
-      || response.output.tool !== this.view.plan!.steps[index].request.tool) {
+    const tool = this.view.plan!.steps[index].request.tool;
+    const expected = tool === "create_note" ? "executed" : "simulated";
+    if (response.status !== expected || response.output.status !== expected
+      || response.output.executed !== (expected === "executed") || response.output.tool !== tool) {
       throw new Error("Unexpected execution response; inspect desktop activity before taking another action");
     }
-    this.step(index, { status: "simulated", result: response.output.message });
+    this.step(index, { status: expected, result: response.output.message });
     this.plan({ approval: null });
-    this.audit(`${response.output.tool}: simulated, no action executed. ${response.output.message}`);
+    this.audit(`${tool}: ${expected}. ${response.output.message}`);
     return true;
   }
   approve = async (): Promise<void> => {
@@ -184,7 +189,7 @@ export class IntentEngine {
   };
   private fail(error: unknown) {
     const message = `Desktop request failed: ${String(error)}. No success is assumed. Inspect activity or cancel before making a new plan; this step will not be retried automatically.`;
-    const index = this.view.plan?.steps.findIndex(step => step.status === "running") ?? -1;
+    const index = this.view.plan?.steps.findIndex(step => step.status === "running" || step.status === "awaiting-approval") ?? -1;
     if (index >= 0) this.step(index, { status: "error", result: message });
     this.plan({ status: "error" });
     this.update({ notice: message });

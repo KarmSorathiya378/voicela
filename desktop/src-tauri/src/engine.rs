@@ -1,7 +1,7 @@
 use crate::{
     activity_log::{ActivityLog, ActivityStatus},
     state::AppState,
-    tools::{ToolInput, ToolOutput, ToolRegistry},
+    tools::{ExecutionStatus, ToolInput, ToolOutput, ToolRegistry},
 };
 use serde::Serialize;
 
@@ -21,6 +21,7 @@ pub struct StateSnapshot {
 pub enum RunResponse {
     AwaitingApproval { approval: PendingApproval },
     Simulated { output: ToolOutput },
+    Executed { output: ToolOutput },
     Denied { message: String },
 }
 
@@ -73,6 +74,12 @@ impl Engine {
         }
         request.validate()?;
         validate_intent(&intent)?;
+        // Store the note body only when the approved save succeeds.
+        let intent = if matches!(&request, ToolInput::CreateNote(_)) {
+            "Save a note to local activity history".into()
+        } else {
+            intent
+        };
         let permission = self.registry.get(request.name())?.descriptor().permission;
         if !permission.enabled {
             return Err("Tool permission is disabled".into());
@@ -136,10 +143,18 @@ impl Engine {
     fn execute(&mut self, request: &ToolInput, intent: &str) -> Result<RunResponse, String> {
         self.state.transition(AppState::Acting)?;
         let result = (|| {
-            let output = self.registry.get(request.name())?.execute(request)?;
-            self.log
-                .append(request.name(), intent, ActivityStatus::Simulated)?;
-            Ok(RunResponse::Simulated { output })
+            let output = self
+                .registry
+                .get(request.name())?
+                .execute(request, &self.log)?;
+            match output.status {
+                ExecutionStatus::Executed => Ok(RunResponse::Executed { output }),
+                ExecutionStatus::Simulated => {
+                    self.log
+                        .append(request.name(), intent, ActivityStatus::Simulated)?;
+                    Ok(RunResponse::Simulated { output })
+                }
+            }
         })();
         self.state.transition(if result.is_ok() {
             AppState::Completed
@@ -153,7 +168,7 @@ impl Engine {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tools::{FindFileInput, OpenAppInput};
+    use crate::tools::{CreateNoteInput, FindFileInput, OpenAppInput};
     fn request() -> ToolInput {
         ToolInput::OpenApp(OpenAppInput {
             app: "Notepad".into(),
@@ -197,6 +212,51 @@ mod tests {
         engine.log.clear().unwrap();
         assert!(engine.log.recent(20).unwrap().is_empty());
     }
+    #[test]
+    fn note_is_written_once_after_approval_and_survives_restart() {
+        let path = std::env::temp_dir().join(format!("voicela-note-{}.sqlite3", uuid::Uuid::new_v4()));
+        let mut engine = Engine::new(ActivityLog::open(&path).unwrap());
+        let note = CreateNoteInput {
+            title: "Shopping".into(),
+            body: "Buy milk".into(),
+        };
+        let RunResponse::AwaitingApproval { approval } = engine
+            .run(ToolInput::CreateNote(note.clone()), "Shopping: Buy milk".into())
+            .unwrap()
+        else {
+            panic!("Saving a note must require approval");
+        };
+        assert!(!engine.log.recent(20).unwrap()[0].intent.contains("Buy milk"));
+        engine.approve(&approval.id, false).unwrap();
+        assert!(engine.log.recent(20).unwrap().iter().all(|entry| {
+            !entry.intent.contains("Buy milk") && !matches!(entry.status, ActivityStatus::Executed)
+        }));
+        let RunResponse::AwaitingApproval { approval } = engine
+            .run(ToolInput::CreateNote(note), "Shopping: Buy milk".into())
+            .unwrap()
+        else {
+            panic!("Saving a note must require approval");
+        };
+        assert!(matches!(engine.approve(&approval.id, true).unwrap(),
+            RunResponse::Executed { output } if output.executed));
+        assert!(engine.approve(&approval.id, true).is_err());
+        drop(engine);
+
+        let log = ActivityLog::open(&path).unwrap();
+        let entries = log.recent(20).unwrap();
+        let saved: Vec<_> = entries.iter()
+            .filter(|entry| matches!(entry.status, ActivityStatus::Executed))
+            .collect();
+        assert_eq!(saved.len(), 1);
+        let note: CreateNoteInput = serde_json::from_str(&saved[0].intent).unwrap();
+        assert_eq!(note.title, "Shopping");
+        assert_eq!(note.body, "Buy milk");
+        log.clear().unwrap();
+        assert!(log.recent(20).unwrap().is_empty());
+        drop(log);
+        std::fs::remove_file(path).unwrap();
+    }
+
     #[test]
     fn typed_allowlist_rejects_unknown_or_malformed_inputs() {
         assert!(

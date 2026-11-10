@@ -44,7 +44,7 @@ export function SpeechPanel(props: SpeechPanelProps) {
       <div><h2 id={`${id}-title`}>Your next instruction</h2><p>Speak or type, then review your words before sending.</p></div>
       <span className="speech-state" role="status" aria-live="polite">
         {recording && <span className="speech-recording-dot" aria-hidden="true" />}
-        {speech.phase === "listening" ? "Microphone on · Listening" : speech.phase === "transcribing" ? "Finishing transcription · Stop available" : "Microphone off"}
+        {speech.phase === "listening" ? "Microphone on · Listening" : speech.phase === "transcribing" ? "Finishing transcription" : "Microphone off"}
       </span>
     </div>
 
@@ -74,7 +74,7 @@ export function SpeechPanel(props: SpeechPanelProps) {
             onBlur={() => { if (keyboardHeld.current) { keyboardHeld.current = false; speech.stop(); } }}>
             {speech.phase === "listening" ? "Listening · release to stop" : "Hold to talk"}
           </button>
-          {recording && <button type="button" className="secondary" onClick={speech.stop}>Stop</button>}
+          {speech.phase === "listening" && <button type="button" className="secondary" onClick={speech.stop}>Stop</button>}
         </div>
         <p className="speech-help" id={`${id}-shortcut`}>{speech.shortcutMessage || "Hold to talk also works with Space or Enter while the button is focused."}</p>
       </>}

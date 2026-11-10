@@ -21,7 +21,11 @@ function fixture() {
       assert.equal(id, pending.id);
       const request = pending.request;
       pending = null;
-      return approved ? simulated(request) : { status: 'denied', message: 'Declined. No action executed.' };
+      if (!approved) return { status: 'denied', message: 'Declined. No action executed.' };
+      if (request.tool === 'create_note') {
+        return { status: 'executed', output: { tool: request.tool, executed: true, status: 'executed', message: 'Note saved.' } };
+      }
+      return simulated(request);
     },
   };
   return { client, calls, engine: new IntentEngine(client) };
@@ -31,6 +35,9 @@ test('six deterministic rules have exact tool inputs', () => {
   assert.deepEqual(intentExamples.map(text => parseIntent(text).actions[0].request.tool), ['find_file', 'open_app', 'create_note', 'draft_message', 'browser_search', 'calendar_event']);
   assert.deepEqual(parseIntent('draft message to Maya saying Hello').actions[0].request.input, { recipient: 'Maya', body: 'Hello' });
   assert.deepEqual(parseIntent('find my invoice').actions[0].request.input, { query: 'invoice' });
+  for (const phrase of ['Create a note titled Shopping saying Buy milk', 'Make a note called Shopping that says Buy milk', 'Create note Shopping: Buy milk']) {
+    assert.deepEqual(parseIntent(phrase).actions[0].request, { tool: 'create_note', input: { title: 'Shopping', body: 'Buy milk' } });
+  }
 });
 test('unsupported or incomplete sequences reject atomically', () => {
   for (const text of ['', 'send a message to Maya', 'delete invoice', 'find invoice then send it', 'draft message to Maya', 'create note Shopping', 'open it', 'prepare event Review from tomorrow to later', 'prepare event Review from 2026-02-30T10:00:00Z to 2026-03-03T11:00:00Z', 'prepare event Review from 2026-11-11T11:00:00Z to 2026-11-11T10:00:00Z', 'find ' + 'x'.repeat(2048)]) {
@@ -54,7 +61,8 @@ test('staging never runs tools; consequential step awaits explicit approval', as
   await engine.approve();
   assert.equal(calls.filter(call => call[0] === 'approval').length, 2);
   assert.equal(engine.getSnapshot().plan.status, 'completed');
-  assert.ok(engine.getSnapshot().plan.steps.every(step => step.status === 'simulated'));
+  assert.deepEqual(engine.getSnapshot().plan.steps.map(step => step.status), ['simulated', 'executed', 'simulated']);
+  assert.match(engine.getSnapshot().notice, /Executed: 1\. Simulated: 2\./);
 });
 test('stop during in-flight step pauses before next; resume never replays', async () => {
   const { engine, client, calls } = fixture();
@@ -127,5 +135,14 @@ test('mismatched or unexpected tool results are never reported as success', asyn
   client.runTool = async () => simulated({ tool: 'open_app' });
   engine.submitTranscript('find invoice'); await engine.run();
   assert.equal(engine.getSnapshot().plan.status, 'error');
+  assert.equal(engine.getSnapshot().plan.steps[0].status, 'error');
+});
+
+test('a simulated note is never reported as saved', async () => {
+  const { engine, client } = fixture();
+  client.approveTool = async () => simulated({ tool: 'create_note' });
+  engine.submitTranscript('Create a note titled Shopping saying Buy milk');
+  await engine.run();
+  await engine.approve();
   assert.equal(engine.getSnapshot().plan.steps[0].status, 'error');
 });

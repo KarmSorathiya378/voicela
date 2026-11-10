@@ -13,23 +13,23 @@ export interface ToolDescriptor {
   name: ToolName;
   description: string;
   permission: { enabled: boolean; requires_approval: boolean };
-  implementation: "simulated";
+  implementation: "simulated" | "local";
   input_schema: Record<string, unknown>;
   output_schema: Record<string, unknown>;
 }
 export interface PendingApproval { id: string; request: ToolInput; intent: string }
 export interface StateSnapshot { state: AppState; pending_approval: PendingApproval | null }
-export interface ToolOutput { tool: ToolName; status: "simulated"; message: string; executed: boolean }
+export interface ToolOutput { tool: ToolName; status: "simulated" | "executed"; message: string; executed: boolean }
 export type RunResponse =
   | { status: "awaiting_approval"; approval: PendingApproval }
-  | { status: "simulated"; output: ToolOutput }
+  | { status: "simulated" | "executed"; output: ToolOutput }
   | { status: "denied"; message: string };
 export interface ActivityEntry {
   id: number;
   timestamp: string;
   tool: ToolName;
   intent: string;
-  status: "awaiting_approval" | "approved" | "simulated" | "denied" | "client_note";
+  status: "awaiting_approval" | "approved" | "simulated" | "executed" | "denied" | "client_note";
 }
 
 // All IPC is centralized here. Tool inputs are discriminated unions, never arbitrary commands.
