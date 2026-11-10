@@ -5,11 +5,11 @@ export type ParsedIntent =
   | { supported: true; transcript: string; actions: IntentAction[] }
   | { supported: false; message: string };
 
-export const supportedInstructions = "I can find files, open an app, create a note, prepare a calendar event, draft a message, or search the web. Sending and deleting are not available.";
+export const supportedInstructions = "I can save a local note or simulate finding files, opening an app, preparing a calendar event, drafting a message, or searching the web.";
 export const intentExamples = [
   "Find my invoice",
   "Open Notepad",
-  "Create note Shopping: Buy milk",
+  "Create a note titled Shopping saying buy milk",
   "Draft message to Maya saying I will be there at five",
   "Search the web for train times",
   "Prepare calendar event Review from 2026-11-11T10:00:00+05:30 to 2026-11-11T10:30:00+05:30",
@@ -42,7 +42,8 @@ export function parseIntent(raw: string): ParsedIntent {
       request = { tool: "find_file", input: { query: match[1].trim() } };
     } else if ((match = instruction.match(/^(?:open|launch)(?:\s+(?:app|application))?\s+(.+)$/i))) {
       request = { tool: "open_app", input: { app: match[1].trim() } };
-    } else if ((match = instruction.match(/^(?:create|make)(?:\s+a)?\s+note\s+([^:]+):\s*(.+)$/i))) {
+    } else if ((match = (instruction.match(/^(?:create|make)(?:\s+a)?\s+note\s+(?:titled|called)\s+(.+?)\s+(?:saying|that says)\s+([\s\S]+)$/i)
+      ?? instruction.match(/^(?:create|make)(?:\s+a)?\s+note\s+([^:]+):\s*([\s\S]+)$/i)))) {
       request = { tool: "create_note", input: { title: match[1].trim(), body: match[2].trim() } };
     } else if ((match = instruction.match(/^draft(?:\s+a)?\s+message\s+to\s+(.+?)\s+(?:saying|that says|:)\s*(.+)$/i))) {
       request = { tool: "draft_message", input: { recipient: match[1].trim(), body: match[2].trim() } };
@@ -57,7 +58,7 @@ export function parseIntent(raw: string): ParsedIntent {
     } else if (/^draft\b/i.test(instruction)) {
       return unsupported('Add the recipient and message, for example “Draft message to Maya saying I will be there at five”. No steps have run.');
     } else if (/^(?:create|make)\b.*\bnote\b/i.test(instruction)) {
-      return unsupported('Add a title and body, for example “Create note Shopping: Buy milk”. No steps have run.');
+      return unsupported('Add a title and body, for example “Create a note titled Shopping saying buy milk”. No steps have run.');
     } else if (/\b(?:calendar|event)\b/i.test(instruction)) {
       return unsupported(`Give an event title, start and end with time zones. Example: “${intentExamples[5]}”. No steps have run.`);
     } else {

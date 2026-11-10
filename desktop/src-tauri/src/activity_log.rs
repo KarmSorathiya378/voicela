@@ -8,6 +8,7 @@ pub enum ActivityStatus {
     AwaitingApproval,
     Approved,
     Simulated,
+    Executed,
     Denied,
     ClientNote,
 }
