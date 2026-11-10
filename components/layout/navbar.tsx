@@ -8,10 +8,10 @@ import { Container } from "@/components/ui/container";
 
 const links = [
   { href: "/features", label: "Product" },
-  { href: "/demo", label: "Interactive Demo" },
+  { href: "/demo", label: "Demo" },
   { href: "/download", label: "Platforms" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/security", label: "About / Docs" },
+  { href: "/security", label: "Security" },
 ];
 export { Navbar };
 export default function Navbar() {
@@ -145,7 +145,7 @@ export default function Navbar() {
           </Button>
           <Button asChild size="sm" className="hidden sm:inline-flex">
             <Link href="/demo">
-              Try Interactive Demo
+              Try the demo
               <ArrowUpRight size={15} aria-hidden="true" />
             </Link>
           </Button>
@@ -184,7 +184,7 @@ export default function Navbar() {
             ))}
             <Button asChild className="mt-3 self-start">
               <Link href="/demo" onClick={() => setOpen(false)}>
-                Try Interactive Demo
+                Try the demo
                 <ArrowUpRight size={16} aria-hidden="true" />
               </Link>
             </Button>

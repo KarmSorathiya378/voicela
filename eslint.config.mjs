@@ -18,6 +18,8 @@ const eslintConfig = defineConfig([
     ".codex/**",
     ".marshell/**",
     ".git/**",
+    // Separate Vite/Tauri desktop subproject with its own tsconfig; not part of the Next.js app.
+    "desktop/**",
   ]),
   // Node CJS test harnesses legitimately use require() for node:test etc.
   {
