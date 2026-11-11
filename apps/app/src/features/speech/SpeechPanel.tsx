@@ -13,14 +13,16 @@ export function SpeechPanel(props: SpeechPanelProps) {
   const recording = speech.phase !== "idle" || speech.starting;
   const unavailable = props.disabled || sending || speech.testing;
 
+  const submitTranscript = speech.dictation && props.onDictationReady ? props.onDictationReady : props.onTranscriptReady;
+
   async function submit() {
     const transcript = speech.text.trim();
-    if (!transcript || !props.onTranscriptReady || unavailable || recording || submitting.current) return;
+    if (!transcript || !submitTranscript || unavailable || recording || submitting.current) return;
     submitting.current = true;
     setSending(true);
     setFeedback("");
     try {
-      await props.onTranscriptReady(transcript);
+      await submitTranscript(transcript);
       setFeedback("Transcript submitted. Your text is kept here for reference.");
     } catch {
       setFeedback("Transcript could not be submitted. Your text is saved in this editor; please retry.");
@@ -122,12 +124,12 @@ export function SpeechPanel(props: SpeechPanelProps) {
     {speech.interim && <p className="speech-interim" aria-label="Live partial transcript">{speech.interim}</p>}
     <p className="speech-help" id={`${id}-editing`}>{recording ? "Listening is active. Pause listening to edit the transcript." : "Edit words and punctuation freely. Undo restores previous edits or the text before your last recording."}</p>
     <div className="speech-actions">
-      <button type="button" disabled={!speech.text.trim() || recording || unavailable || !props.onTranscriptReady} onClick={() => void submit()}>{sending ? "Submitting…" : "Use transcript"}</button>
+      <button type="button" disabled={!speech.text.trim() || recording || unavailable || !submitTranscript} onClick={() => void submit()}>{sending ? "Submitting…" : "Use transcript"}</button>
       <button type="button" className="secondary" disabled={!speech.undoCount || recording} onClick={speech.undo}>Undo</button>
       <button type="button" className="secondary" disabled={!speech.text} onClick={() => void copy()}>Copy</button>
       <button type="button" className="secondary" disabled={!speech.text || recording} onClick={() => { speech.replaceText(""); setFeedback(""); }}>Clear</button>
     </div>
-    {!props.onTranscriptReady && <p className="speech-help">The action engine is not connected. You can edit and copy your transcript.</p>}
+    {!submitTranscript && <p className="speech-help">The action engine is not connected. You can edit and copy your transcript.</p>}
     {feedback && <p className="speech-notice" role="status">{feedback}</p>}
   </section>;
 }

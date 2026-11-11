@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "floating-panel",
+  "description": "Floating panel core events; microphone and shortcut ownership stays in main",
+  "windows": ["panel"],
+  "permissions": ["core:default"]
+}

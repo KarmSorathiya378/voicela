@@ -351,6 +351,26 @@ export function useSpeech({ onPhaseChange, onSpeechReady, onDictationReady, lang
     })();
     return () => { disposed = true; void registration.then(() => unregister?.()).catch(() => undefined); };
   }, [native, supported, startListening, pauseListening]);
+  useEffect(() => {
+    if (!native) return;
+    let disposed = false;
+    let actions = Promise.resolve();
+    const registration = listen<string>("panel-action", event => {
+      actions = actions.then(async () => {
+        if (disposed) return;
+        const action = event.payload;
+        if (action === "pause") await pauseListening();
+        else if (action === "toggle") {
+          if (continuousId.current) await pauseListening(); else await startListening();
+        } else if (["assistant", "dictation", "edit"].includes(action)) {
+          await pauseListening();
+          if (!disposed) setDictation(action !== "assistant");
+        }
+      }).catch(error => { if (!disposed) setMessage(String(error)); });
+    });
+    void registration.catch(error => { if (!disposed) setMessage(`Panel controls unavailable: ${String(error)}`); });
+    return () => { disposed = true; void registration.then(unlisten => unlisten()).catch(() => undefined); };
+  }, [native, pauseListening, startListening]);
   function chooseDevice(id: number) {
     setDeviceId(id);
     try { localStorage.setItem("voicela.microphone", devices.find(device => device.id === id)?.name ?? ""); } catch { /* Optional preference storage. */ }

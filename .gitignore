@@ -44,3 +44,16 @@ next-env.d.ts
 
 # local waitlist data store (json persistence)
 /data/
+
+# pnpm local store
+.pnpm-store/
+
+# Workspace package outputs
+**/node_modules/
+**/.next/
+**/out/
+**/coverage/
+/apps/web/data/
+
+# Local commit-message scratch files
+msg.txt
