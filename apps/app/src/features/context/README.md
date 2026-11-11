@@ -25,7 +25,7 @@ Import `handlePageContextIntent`, `summarizeThisPage`, `validatePageContext`, `p
 
 Captured text, source, time and character count appear in the panel as plain text. The summary is also rendered as text, never HTML. Snapshot text is memory-only and bounded to 24,000 characters. Returned summaries must remain untrusted if consumed elsewhere.
 
-Integration outside this slice: mount `ContextPanel` in the app workspace and route the engine/speech summary intent to `handlePageContextIntent`. Those shell/engine files are outside this task's edit ownership. The current app shell did not mount this panel when this implementation started; the shell teammate has been notified. No model-backed answer provider is supplied by this slice.
+Shell integration: Lark mounted `ContextPanel` in the workspace and added the global `page_context` privacy gate. That grant is required in addition to window consent and separate screenshot consent. Revocation is checked during OCR cancellation polling and between accessibility elements, as well as before/after reads; a denied read clears the native binding, screenshot consent and snapshot. The panel also stops and clears context on `voicela:emergency-stop`. Engine/speech owners can route the summary intent to `handlePageContextIntent`; automatic voice routing and a model-backed answer provider are not supplied by this slice.
 
 ## Verification
 
@@ -37,3 +37,5 @@ On an interactive Windows desktop: `powershell -NoProfile -File src/features/con
 The native fixture verifies real whole-window OCR, rectangle cropping without outside pixels, obscured-window refusal, editable-field refusal, a safe region outside inputs, and password-field refusal. It exercises the same embedded helper and encoded-command launch as production. It does not grant the desktop app's own permission or test the Tauri IPC UI end to end. Rust tests cover separate screenshot consent, disabling, generation invalidation, exclusions, and region bounds. JS tests cover cancellation, untrusted summary data, stale generations/time/window identity and intent routing. Browser visual QA could not run because no browser surfaces were available in this session.
 
 Verified in this session (2026-11-11): `npm run build` exit 0; `cargo build` exit 0; `cargo test` exit 0 (28 passed, 4 pre-existing microphone/catalogue tests ignored); JS context tests 4/4 passed; interactive native OCR fixture 6/6 passed. No external app integration or browser visual pass is claimed.
+
+After shell/privacy integration: `npm run build` and `cargo build` exit 0; `cargo test` exits 0 (34 unit tests plus 1 privacy-history integration test passed, 4 existing tests ignored); all 4 context JS tests pass. Privacy denial assertions verify that native window/screenshot consent is cleared.

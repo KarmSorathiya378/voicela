@@ -27,8 +27,10 @@ export function ContextPanel({ onSummarize }: { onSummarize?: PageAnswer }) {
   useEffect(() => {
     void adapter.getPolicy().then(setPolicy).catch(e => setError(String(e)));
     const hide = () => { if (document.hidden) { clear(); void stopPageContext().catch(e => setError(String(e))); } };
+    const emergency = () => { clear(); void stopPageContext().catch(e => setError(String(e))); };
     document.addEventListener('visibilitychange', hide);
-    return () => { document.removeEventListener('visibilitychange', hide); void stopPageContext().catch(() => undefined); };
+    window.addEventListener('voicela:emergency-stop', emergency);
+    return () => { document.removeEventListener('visibilitychange', hide); window.removeEventListener('voicela:emergency-stop', emergency); void stopPageContext().catch(() => undefined); };
   }, []);
   return <section aria-label="Screen context">
     <h2>Screen context</h2>

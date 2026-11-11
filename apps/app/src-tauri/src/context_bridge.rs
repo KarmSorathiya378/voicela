@@ -50,7 +50,9 @@ pub fn context_enable(
     binding: Option<String>,
     screenshot_permission: Option<bool>,
 ) -> Result<(), String> {
-    if binding.is_some() { require_context_permission()?; }
+    if binding.is_some() {
+        require_context_permission()?;
+    }
     let mut s = session().lock().map_err(|_| "Context lock failed")?;
     if binding.as_ref().is_some_and(|b| s.excluded.contains(b)) {
         return Err("Window excluded".into());
@@ -113,7 +115,10 @@ pub fn context_read(
         if let Some(r) = &region {
             validate_region(r)?;
         }
-        require_context_permission()?;
+        if let Err(error) = require_context_permission() {
+            revoke_session(&mut s);
+            return Err(error);
+        }
         s.busy = true;
         (s.generation, source, region, previous)
     };
@@ -121,7 +126,7 @@ pub fn context_read(
     let mut s = session().lock().map_err(|_| "Context lock failed")?;
     s.busy = false;
     if let Err(error) = require_context_permission() {
-        s.snapshot = None;
+        revoke_session(&mut s);
         return Err(error);
     }
     if !authorized(&s, &binding, generation) {
@@ -163,6 +168,12 @@ fn require_context_permission() -> Result<(), String> {
     } else {
         Err("Enable page context in privacy settings first".into())
     }
+}
+fn revoke_session(s: &mut Session) {
+    s.binding = None;
+    s.pixels = false;
+    s.snapshot = None;
+    s.generation += 1;
 }
 fn validate_region(r: &Region) -> Result<(), String> {
     if r.width == 0
@@ -253,10 +264,11 @@ fn safe_labels(binding: &str, generation: u64) -> Result<String, String> {
             let mut labels = Vec::new();
             let mut count = 0;
             while let Some(element) = queue.pop_front() {
-                if !session()
-                    .lock()
-                    .map(|s| authorized(&s, &binding, generation))
-                    .unwrap_or(false)
+                if require_context_permission().is_err()
+                    || !session()
+                        .lock()
+                        .map(|s| authorized(&s, &binding, generation))
+                        .unwrap_or(false)
                 {
                     return Err("Capture stopped; result discarded".into());
                 }
@@ -389,7 +401,10 @@ fn local_ocr(binding: &str, region: Option<&Region>, generation: u64) -> Result<
             .lock()
             .map(|s| authorized(&s, binding, generation))
             .unwrap_or(false);
-        if !allowed || verify_binding(binding).is_err() || start.elapsed() > Duration::from_secs(25)
+        if !allowed
+            || require_context_permission().is_err()
+            || verify_binding(binding).is_err()
+            || start.elapsed() > Duration::from_secs(25)
         {
             let _ = child.kill();
             let _ = child.wait();
@@ -486,10 +501,23 @@ mod tests {
         let error =
             context_read("test-only-window".into(), Some("ocr".into()), None, None).unwrap_err();
         assert!(error.contains("screenshot permission"));
-        assert!(context_read("test-only-window".into(), None, None, None)
-            .unwrap_err().contains("privacy settings"));
-        assert!(context_enable(Some("test-only-window".into()), None)
-            .unwrap_err().contains("privacy settings"));
+        session().lock().unwrap().pixels = true;
+        assert!(
+            context_read("test-only-window".into(), None, None, None)
+                .unwrap_err()
+                .contains("privacy settings")
+        );
+        {
+            let s = session().lock().unwrap();
+            assert!(s.binding.is_none());
+            assert!(!s.pixels);
+            assert!(s.snapshot.is_none());
+        }
+        assert!(
+            context_enable(Some("test-only-window".into()), None)
+                .unwrap_err()
+                .contains("privacy settings")
+        );
         context_enable(None, None).unwrap();
         assert!(
             context_read("test-only-window".into(), None, None, None)
