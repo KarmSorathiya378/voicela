@@ -138,6 +138,9 @@ mod tests {
 }
 #[tauri::command(async)]
 pub fn adapter_read(selection: bool) -> Result<serde_json::Value, String> {
+    if !crate::permission::integration_enabled("application_access") {
+        return Err("Enable application access in privacy settings first".into());
+    }
     let binding = crate::app_control::bind()?;
     let text = crate::app_control::execute(
         if selection { "selection" } else { "inspect" },
@@ -150,6 +153,7 @@ pub fn adapter_read(selection: bool) -> Result<serde_json::Value, String> {
 }
 #[tauri::command(async)]
 pub fn adapter_action(binding:String, action:String, target:String, core:tauri::State<'_,Mutex<crate::engine::Engine>>) -> Result<crate::engine::RunResponse,String> {
+ if !crate::permission::integration_enabled("application_access") {return Err("Enable application access in privacy settings first".into());}
  if !["type","click","scroll","key"].contains(&action.as_str()) {return Err("Unsupported adapter action".into());}
  let mut engine=core.lock().map_err(|_|"Core lock failed")?;
  if crate::app_control::bind()? != binding {return Err("Focus changed. Refocus the selected application and retry.".into());}

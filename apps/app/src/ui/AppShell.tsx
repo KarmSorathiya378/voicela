@@ -43,6 +43,11 @@ export default function AppShell({ speechPanel, enginePanel, state }: AppShellPr
     void poll(); const timer = window.setInterval(() => void poll(), 2000);
     return () => { active = false; window.clearInterval(timer); };
   }, [desktop, refresh]);
+  useEffect(() => {
+    const changed = () => { setEntries([]); void refresh().catch(() => undefined); };
+    window.addEventListener('voicela:history-changed', changed);
+    return () => window.removeEventListener('voicela:history-changed', changed);
+  }, [refresh]);
   async function clearHistory() {
     setClearing(true);
     try { await api.clearActivityLog(); await refresh(); } catch (reason) { setError(String(reason)); } finally { setClearing(false); }

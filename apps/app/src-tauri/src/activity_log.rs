@@ -27,6 +27,14 @@ pub struct ActivityLog {
     connection: Connection,
 }
 impl ActivityLog {
+    fn enforce_retention(&self) -> Result<(), String> {
+        // Unit tests use isolated databases without the process-wide privacy store.
+        #[cfg(test)]
+        if crate::permission::get_privacy_settings().is_err() {
+            return Ok(());
+        }
+        crate::permission::enforce_retention()
+    }
     pub fn open(path: &std::path::Path) -> Result<Self, String> {
         let connection = Connection::open(path).map_err(|e| e.to_string())?;
         Self::new(connection)
@@ -60,9 +68,10 @@ impl ActivityLog {
                 ],
             )
             .map_err(|e| e.to_string())?;
-        Ok(())
+        self.enforce_retention()
     }
     pub fn recent(&self, limit: u32) -> Result<Vec<ActivityEntry>, String> {
+        self.enforce_retention()?;
         let mut statement = self.connection.prepare(
             "SELECT id,timestamp,tool,intent,status FROM activity_log ORDER BY id DESC LIMIT ?1")
             .map_err(|e| e.to_string())?;

@@ -42,6 +42,7 @@ fn authorized(s: &Session, binding: &str, generation: u64) -> bool {
 }
 #[tauri::command(async)]
 pub fn context_bind() -> Result<String, String> {
+    require_context_permission()?;
     crate::app_control::bind()
 }
 #[tauri::command(async)]
@@ -49,6 +50,7 @@ pub fn context_enable(
     binding: Option<String>,
     screenshot_permission: Option<bool>,
 ) -> Result<(), String> {
+    if binding.is_some() { require_context_permission()?; }
     let mut s = session().lock().map_err(|_| "Context lock failed")?;
     if binding.as_ref().is_some_and(|b| s.excluded.contains(b)) {
         return Err("Window excluded".into());
@@ -111,12 +113,17 @@ pub fn context_read(
         if let Some(r) = &region {
             validate_region(r)?;
         }
+        require_context_permission()?;
         s.busy = true;
         (s.generation, source, region, previous)
     };
     let result = capture(&binding, &source, region.as_ref(), generation);
     let mut s = session().lock().map_err(|_| "Context lock failed")?;
     s.busy = false;
+    if let Err(error) = require_context_permission() {
+        s.snapshot = None;
+        return Err(error);
+    }
     if !authorized(&s, &binding, generation) {
         return Err("Capture stopped; result discarded".into());
     }
@@ -149,6 +156,13 @@ pub fn context_read(
         at: Instant::now(),
     });
     Ok(json!({"text":text,"source":source,"trust":"untrusted","captureId":id,"region":region}))
+}
+fn require_context_permission() -> Result<(), String> {
+    if crate::permission::integration_enabled("page_context") {
+        Ok(())
+    } else {
+        Err("Enable page context in privacy settings first".into())
+    }
 }
 fn validate_region(r: &Region) -> Result<(), String> {
     if r.width == 0
@@ -467,10 +481,15 @@ mod tests {
     }
     #[test]
     fn pixel_capture_requires_separate_explicit_consent() {
-        context_enable(Some("test-only-window".into()), None).unwrap();
+        // Seed only the session binding; the global integration grant remains off.
+        session().lock().unwrap().binding = Some("test-only-window".into());
         let error =
             context_read("test-only-window".into(), Some("ocr".into()), None, None).unwrap_err();
         assert!(error.contains("screenshot permission"));
+        assert!(context_read("test-only-window".into(), None, None, None)
+            .unwrap_err().contains("privacy settings"));
+        assert!(context_enable(Some("test-only-window".into()), None)
+            .unwrap_err().contains("privacy settings"));
         context_enable(None, None).unwrap();
         assert!(
             context_read("test-only-window".into(), None, None, None)

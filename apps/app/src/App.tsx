@@ -7,6 +7,9 @@ import { listen } from "@tauri-apps/api/event";
 import { DesktopControls, FloatingPanel } from "./features/panel";
 import { TextWorkspace } from "./features/dictation";
 import AppShell from "./ui/AppShell";
+import { GooglePanel } from "./features/integrations/GooglePanel";
+import { WorkflowPanel } from "./features/workflows/WorkflowPanel";
+import { ContextPanel } from "./features/context/ContextPanel";
 
 export default function App() {
   if (new URLSearchParams(window.location.search).has("panel")) return <FloatingPanel />;
@@ -15,6 +18,12 @@ export default function App() {
 
 function MainWorkspace() {
   const engine = useIntentEngine();
+  const emergencyGeneration = useRef(0);
+  useEffect(() => {
+    const stop = () => { emergencyGeneration.current++; void engine.controller.cancel(); };
+    window.addEventListener("voicela:emergency-stop", stop);
+    return () => window.removeEventListener("voicela:emergency-stop", stop);
+  }, [engine.controller]);
   const [dictationTranscript, setDictationTranscript] = useState("");
   const textWorkspace = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -45,11 +54,15 @@ function MainWorkspace() {
         <DesktopControls />
         <SpeechPanel
           onTranscriptReady={async transcript => {
+            const generation = emergencyGeneration.current;
             await captureSync.current;
+            if (generation !== emergencyGeneration.current) return;
             engine.onTranscriptReady(transcript);
           }}
           onSpeechReady={async transcript => {
+            const generation = emergencyGeneration.current;
             await captureSync.current;
+            if (generation !== emergencyGeneration.current) return;
             await engine.controller.handleListeningTurn(transcript);
           }}
           onDictationReady={transcript => {
@@ -62,7 +75,12 @@ function MainWorkspace() {
           <TextWorkspace transcript={dictationTranscript} />
         </div>
       </>}
-      enginePanel={<EnginePanel engine={engine} />}
+      enginePanel={<>
+        <EnginePanel engine={engine} />
+        <ContextPanel />
+        <GooglePanel />
+        <WorkflowPanel />
+      </>}
     />
   );
 }

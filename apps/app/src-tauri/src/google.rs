@@ -11,6 +11,13 @@ use std::{
 };
 use tauri::Manager;
 const SCOPES: &str = "https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/calendar.events.owned";
+fn require_google_permission() -> Result<(), String> {
+    if crate::permission::integration_enabled("google") {
+        Ok(())
+    } else {
+        Err("Enable Google in privacy settings first".into())
+    }
+}
 fn client() -> Result<reqwest::blocking::Client, String> {
     reqwest::blocking::Client::builder()
         .timeout(Duration::from_secs(25))
@@ -47,6 +54,7 @@ fn response(r: reqwest::blocking::Response) -> Result<Value, String> {
 }
 #[tauri::command(async)]
 pub fn google_connect(client_id: String, client_secret: String) -> Result<(), String> {
+    require_google_permission()?;
     let _session = SESSION.lock().map_err(|_| "Session lock failed")?;
     previews()
         .lock()
@@ -121,6 +129,7 @@ pub fn google_connect(client_id: String, client_secret: String) -> Result<(), St
             Err(_) => return Err("Callback failed".into()),
         }
     };
+    require_google_permission()?;
     let token = response(
         client()?
             .post("https://oauth2.googleapis.com/token")
@@ -138,6 +147,7 @@ pub fn google_connect(client_id: String, client_secret: String) -> Result<(), St
     let refresh = token["refresh_token"]
         .as_str()
         .ok_or("No refresh token returned; reconnect with consent")?;
+    require_google_permission()?;
     vault()?
         .set_password(
             &json!({"refresh":refresh,"client_id":client_id,"client_secret":client_secret})
@@ -334,6 +344,7 @@ fn previews() -> &'static Mutex<HashMap<String, Preview>> {
 }
 #[tauri::command(async)]
 pub fn google_preview(action: Action, sandbox: bool) -> Result<Value, String> {
+    if !sandbox { require_google_permission()?; }
     let _session = SESSION.lock().map_err(|_| "Session lock failed")?;
     match &action {
         Action::Mail { to, subject, body } => {
@@ -470,6 +481,7 @@ pub fn google_confirm(app: tauri::AppHandle, preview_id: String) -> Result<Value
     if p.sandbox {
         return Ok(json!({"id":preview_id,"verified":true,"sandbox":true}));
     }
+    require_google_permission()?;
     let token = access()?;
     let http = client()?;
     let directory = app
@@ -490,6 +502,7 @@ pub fn google_confirm(app: tauri::AppHandle, preview_id: String) -> Result<Value
             .as_str()
             .ok_or("Invalid stored session")?,
     )?;
+    require_google_permission()?;
     claim(&db, &key)?;
     let mail = matches!(&p.action, Action::Mail { .. });
     let id = match p.action {

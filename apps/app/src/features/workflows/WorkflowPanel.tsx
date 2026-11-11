@@ -4,7 +4,11 @@ import { WorkflowRunner, schedulingEnabled, type Routine, type RunRecord } from 
 import { GoogleAdapter, type GoogleAction, type GoogleMode, type GooglePreview, type GoogleResult } from '../integrations';
 interface GoogleRoutine extends Routine { actions?: GoogleAction[] }
 export function WorkflowPanel() {
-  const runner = useRef(new WorkflowRunner(localStorage)).current;
+  const runner = useRef(new WorkflowRunner({
+    getItem(key) { try { return localStorage.getItem(key); } catch { return null; } },
+    // Persistent journaling is required before provider writes; storage failures must throw.
+    setItem(key, value) { localStorage.setItem(key, value); },
+  })).current;
   const [name, setName] = useState(''); const [command, setCommand] = useState('');
   const [to, setTo] = useState(''); const [subject, setSubject] = useState(''); const [body, setBody] = useState('');
   const [start, setStart] = useState(''); const [end, setEnd] = useState('');

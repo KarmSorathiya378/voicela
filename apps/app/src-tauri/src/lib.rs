@@ -110,6 +110,8 @@ pub fn run() {
             }
             let log = activity_log::ActivityLog::open(&directory.join("activity.sqlite3"))
                 .map_err(std::io::Error::other)?;
+            permission::initialize(&directory).map_err(std::io::Error::other)?;
+            permission::enforce_retention().map_err(std::io::Error::other)?;
             app.manage(Mutex::new(Engine::new(log)));
             Ok(())
         })
@@ -120,6 +122,10 @@ pub fn run() {
             }
         })
         .invoke_handler(tauri::generate_handler![
+            permission::get_privacy_settings,
+            permission::set_privacy_settings,
+            permission::export_private_history,
+            permission::delete_private_history,
             adapter_policy::get_app_policy,
             adapter_policy::set_app_policy,
             adapter_policy::adapter_read,

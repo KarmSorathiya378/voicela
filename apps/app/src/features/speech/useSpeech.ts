@@ -80,7 +80,7 @@ export function useSpeech({ onPhaseChange, onSpeechReady, onDictationReady, lang
       timeout.current = undefined;
       changePhase("transcribing");
       void session.ready.then(() => api.stopSpeech()).then(async result => {
-        if (!mounted.current) return;
+        if (!mounted.current || nativeSession.current !== session) return;
         const cleaned = cleanTranscript(result.text);
         const output = callbacks.current.formatTranscript?.(cleaned) ?? cleaned;
         if (output) replaceText([session.prefix, output].filter(Boolean).join(" "), session.dictation);
@@ -275,6 +275,28 @@ export function useSpeech({ onPhaseChange, onSpeechReady, onDictationReady, lang
     if (mounted.current) { setContinuous(false); changePhase("idle"); setMessage("Listening paused. No new utterances will run."); }
     await api.stopListening();
   }, [changePhase]);
+
+  useEffect(() => {
+    const emergencyStop = () => {
+      testCancel.current = true;
+      const session = nativeSession.current;
+      nativeSession.current = null;
+      if (session) {
+        session.stopping = true;
+        void session.ready.then(() => api.stopSpeech(true)).catch(() => undefined);
+      }
+      const active = recognition.current;
+      recognition.current = null;
+      active?.abort();
+      clearTimeout(timeout.current);
+      timeout.current = undefined;
+      setInterim("");
+      if (native) void pauseListening().catch(error => setMessage(String(error)));
+      else changePhase("idle");
+    };
+    window.addEventListener("voicela:emergency-stop", emergencyStop);
+    return () => window.removeEventListener("voicela:emergency-stop", emergencyStop);
+  }, [native, pauseListening, changePhase]);
 
   const startListening = useCallback(async () => {
     if (!native || callbacks.current.testing || continuousId.current || continuousStarting.current) return;

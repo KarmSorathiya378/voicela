@@ -128,14 +128,6 @@ impl Engine {
         if pending.id != id {
             return Err("Unknown or expired approval ID".into());
         }
-        let permission = self
-            .registry
-            .get(pending.request.name())?
-            .descriptor()
-            .permission;
-        if !permission.enabled {
-            return Err("Tool permission is disabled".into());
-        }
         if !approved {
             self.log.append(
                 pending.request.name(),
@@ -147,6 +139,14 @@ impl Engine {
             return Ok(RunResponse::Denied {
                 message: "Request declined. No action was executed.".into(),
             });
+        }
+        let permission = self
+            .registry
+            .get(pending.request.name())?
+            .descriptor()
+            .permission;
+        if !permission.enabled {
+            return Err("Tool permission is disabled".into());
         }
         // Record approval before consuming the request; a failed audit write never executes it.
         self.log.append(

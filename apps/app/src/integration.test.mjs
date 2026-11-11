@@ -17,6 +17,9 @@ test('routes mount one speech owner and preserve typed fallback', async () => {
     assert.match(workspace, /Editable transcript/);
     assert.match(workspace, /Speech recognition is unavailable/);
     assert.match(workspace, /Use transcript/);
+    assert.match(workspace, /aria-label="Google integration"/);
+    assert.match(workspace, /aria-label="Reusable workflows"/);
+    assert.match(workspace, /aria-label="Screen context"/);
     globalThis.window.location.search = '?panel';
     const floating = renderToStaticMarkup(createElement(App));
     assert.match(floating, /class="vp-panel"/);

@@ -6,7 +6,7 @@ First run loads `privacy.json` from app data. The optional three-step flow choos
 
 All tool and integration grants default off. Native `permission::policy` reads current preferences on each invocation, including approval execution. Approval requirements remain enforced. Native initialization errors fail startup closed. Retention defaults to zero days; choices are 1, 7, 30 or 90 days. Exports contain private history and are saved as uniquely named JSON files in app data; deleting history does not delete exports. Deletion uses SQLite secure deletion and vacuum. Diagnostics use a numeric field allowlist; arbitrary strings, nested content, transcripts, emails and file contents are excluded. The diagnostics preference authorizes local counters only, with no network collector.
 
-## Required shell/backend integration
+## Shell/backend integration
 
 Owned outside this feature:
 - Call `permission::initialize(&directory)?` during setup after creating the activity database; register `get_privacy_settings`, `set_privacy_settings`, `export_private_history`, `delete_private_history` Tauri commands.
@@ -14,6 +14,6 @@ Owned outside this feature:
 - Gate direct integration entry points with `permission::integration_enabled("google" | "application_access" | "page_context")`. Tool grants alone do not guard direct integration IPC.
 - Handle `voicela:emergency-stop` in the shell to cancel pending/active tasks; native microphone stop is already called directly by the button. Handle `voicela:history-changed` to refresh history views.
 
-These hooks were requested from shell owners. Without command registration, setup displays the native IPC error instead of claiming to save. Until integration gates and retention hooks land, their preferences cannot enforce those external paths.
+These hooks are wired in the shell and native core. Setup displays native IPC errors instead of claiming to save. Google sandbox previews remain available without an integration grant; real account operations recheck the Google grant. Disabling context and disconnecting integrations remain available after grants are revoked. Emergency stop invalidates queued speech results and cancels the remaining engine plan; an external action already in flight can still finish.
 
 Verification: `npm run build` in apps/app; `cargo build` and `cargo test` in apps/app/src-tauri. Permission tests cover defaults/persistence and diagnostic redaction. Real microphone and pointer/keyboard practice still require desktop interaction verification.
