@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { WorkflowRunner, type Routine } from './index';
+export function WorkflowPanel() {
+ const [name,setName]=useState('');const [command,setCommand]=useState('');const [status,setStatus]=useState('');
+ const [routines,setRoutines]=useState<Routine[]>(()=>{try{return JSON.parse(localStorage.getItem('voicela:routines')||'[]');}catch{return [];}});
+ return <section aria-label="Reusable commands"><h2>Reusable commands</h2><p>Saved commands require a fresh preview and approval for each run. Uncertain remote writes must be reconciled before retry.</p><label>Name<input value={name} onChange={e=>setName(e.target.value)}/></label><label>Command<textarea value={command} onChange={e=>setCommand(e.target.value)}/></label><button disabled={!name.trim()||!command.trim()} onClick={()=>{try{const routine={id:crypto.randomUUID(),name,command};new WorkflowRunner(localStorage).save(routine);const next=[...routines,routine];localStorage.setItem('voicela:routines',JSON.stringify(next));setRoutines(next);setStatus('Command saved');}catch(e){setStatus(String(e));}}}>Save command</button><ul>{routines.map(r=><li key={r.id}><strong>{r.name}</strong><p>{r.command}</p><button onClick={()=>{setCommand(r.command);setName(r.name);setStatus('Loaded for review. Submit in the command editor to run.');}}>Load for review</button></li>)}</ul><p role="status">{status}</p></section>;
+}
