@@ -1,0 +1,6 @@
+.privacy-controls { display: grid; gap: 1rem; padding-bottom: 4.5rem; }
+.privacy-controls label { display: flex; align-items: center; gap: .65rem; margin-block: .65rem; flex-wrap: wrap; }
+.privacy-controls fieldset { min-width: 0; }
+.privacy-controls p { max-width: 70ch; overflow-wrap: anywhere; }
+.privacy-stop { position: fixed; bottom: 1rem; right: 1rem; z-index: 1000; max-width: calc(100vw - 2rem); background: #8e2222; color: #fff; border: 1px solid #fff; padding: .8rem 1rem; }
+.privacy-controls button:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
