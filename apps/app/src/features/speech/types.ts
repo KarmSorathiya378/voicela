@@ -7,11 +7,13 @@ export interface SpeechPanelProps {
   onTranscriptReady?: TranscriptReadyHandler;
   /** One fresh spoken utterance, delivered after capture returns to idle. */
   onSpeechReady?: TranscriptReadyHandler;
+  /** When present at capture start, routes dictation here instead of native insertion. */
+  onDictationReady?: TranscriptReadyHandler;
   onPhaseChange?: (phase: SpeechPhase) => void;
   /** Shell sets this during engine execution or approval. Typing and copying remain available. */
   disabled?: boolean;
   language?: string;
-  /** Synchronous pure formatting hook for decoded continuous speech; no analytics. */
+  /** Synchronous pure formatting hook for decoded native speech; no analytics. */
   formatTranscript?: (transcript: string) => string;
 }
 

@@ -51,9 +51,9 @@ export function SpeechPanel(props: SpeechPanelProps) {
     {speech.native && <label className="speech-mode" htmlFor={`${id}-mode`}>When I speak
       <select id={`${id}-mode`} disabled={recording || unavailable || speech.permission === "requesting"} value={speech.dictation ? "dictation" : "command"} onChange={event => speech.setDictation(event.target.value === "dictation")}>
         <option value="command">Run voice commands</option>
-        <option value="dictation">Dictate into the focused app</option>
+        <option value="dictation">{props.onDictationReady ? "Dictate for review" : "Dictate into the focused app"}</option>
       </select>
-      {speech.dictation && <span className="speech-help">Keep a text field focused while speaking. Pauses finish each dictation turn. Pause listening before changing modes.</span>}
+      {speech.dictation && <span className="speech-help">{props.onDictationReady ? "Dictation goes to the connected review workspace before insertion." : "Keep a text field focused while speaking."} Pauses finish each dictation turn. Pause listening before changing modes.</span>}
     </label>}
     <div className="speech-device-settings">
       {speech.native && <label htmlFor={`${id}-device`}>Microphone

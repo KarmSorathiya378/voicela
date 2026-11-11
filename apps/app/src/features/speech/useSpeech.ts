@@ -14,10 +14,10 @@ function recognitionConstructor(): RecognitionConstructor | undefined {
   return host.SpeechRecognition ?? host.webkitSpeechRecognition;
 }
 
-export function useSpeech({ onPhaseChange, onSpeechReady, language = "en-US", disabled = false, formatTranscript }: SpeechPanelProps) {
+export function useSpeech({ onPhaseChange, onSpeechReady, onDictationReady, language = "en-US", disabled = false, formatTranscript }: SpeechPanelProps) {
   const native = isTauri();
   const supported = native || Boolean(recognitionConstructor());
-  const nativeSession = useRef<{ ready: Promise<void>; stopping: boolean; prefix: string; dictation: boolean } | null>(null);
+  const nativeSession = useRef<{ ready: Promise<void>; stopping: boolean; prefix: string; dictation: boolean; routed: boolean } | null>(null);
   const deliveringSpeech = useRef(false);
   const [sensitivity, setSensitivity] = useState(() => readNumber("sensitivity", 50));
   const [silenceMs, setSilenceMs] = useState(() => readNumber("silenceMs", 1500));
@@ -48,8 +48,8 @@ export function useSpeech({ onPhaseChange, onSpeechReady, language = "en-US", di
   const recognition = useRef<Recognition | null>(null);
   const timeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const mounted = useRef(true);
-  const callbacks = useRef({ onPhaseChange, onSpeechReady, disabled, permission, language, dictation, deviceId, nativeLanguage, sensitivity, silenceMs, formatTranscript, testing });
-  callbacks.current = { onPhaseChange, onSpeechReady, disabled, permission, language, dictation, deviceId, nativeLanguage, sensitivity, silenceMs, formatTranscript, testing };
+  const callbacks = useRef({ onPhaseChange, onSpeechReady, onDictationReady, disabled, permission, language, dictation, deviceId, nativeLanguage, sensitivity, silenceMs, formatTranscript, testing });
+  callbacks.current = { onPhaseChange, onSpeechReady, onDictationReady, disabled, permission, language, dictation, deviceId, nativeLanguage, sensitivity, silenceMs, formatTranscript, testing };
 
   const changePhase = useCallback((next: SpeechPhase) => {
     if (!mounted.current) return;
@@ -81,14 +81,19 @@ export function useSpeech({ onPhaseChange, onSpeechReady, language = "en-US", di
       changePhase("transcribing");
       void session.ready.then(() => api.stopSpeech()).then(async result => {
         if (!mounted.current) return;
-        if (result.text) replaceText([session.prefix, result.text].filter(Boolean).join(" "), session.dictation);
+        const cleaned = cleanTranscript(result.text);
+        const output = callbacks.current.formatTranscript?.(cleaned) ?? cleaned;
+        if (output) replaceText([session.prefix, output].filter(Boolean).join(" "), session.dictation);
         setMessage(result.insertion_error ?? (result.needs_review ? "Speech was unclear. Review the transcript before using it; nothing was run or inserted." : result.inserted ? "Dictation sent to the focused app. A copy is kept below." : result.text ? "Transcript ready. Review your words below." : "No speech detected. Check your input device and try speaking for a few seconds."));
         // Finish capture before submitting: engine execution owns the next state.
         deliveringSpeech.current = true;
         nativeSession.current = null;
         changePhase("idle");
+        if (output.trim() && session.dictation && session.routed && !result.needs_review && !result.insertion_error) {
+          await callbacks.current.onDictationReady?.(output);
+        }
         if (result.text && !session.dictation && !result.insertion_error && !result.needs_review) {
-          await callbacks.current.onSpeechReady?.(result.text);
+          await callbacks.current.onSpeechReady?.(output);
           if (mounted.current && callbacks.current.onSpeechReady) setMessage("Voice command submitted. See the action result below.");
         }
       }).catch(error => { if (mounted.current) setMessage(String(error)); })
@@ -119,7 +124,7 @@ export function useSpeech({ onPhaseChange, onSpeechReady, language = "en-US", di
       if (!callbacks.current.dictation) replaceText("");
       changePhase("starting");
       setMessage("Starting Windows microphone. Speak when Listening appears.");
-      const session = { ready: api.startSpeech(callbacks.current.dictation, { deviceId: callbacks.current.deviceId, language: callbacks.current.nativeLanguage }), stopping: false, prefix: callbacks.current.dictation ? textRef.current.trimEnd() : "", dictation: callbacks.current.dictation };
+      const session = { ready: api.startSpeech(callbacks.current.dictation, { deviceId: callbacks.current.deviceId, language: callbacks.current.nativeLanguage, ...{deferInsertion: Boolean(callbacks.current.onDictationReady)} }), stopping: false, prefix: callbacks.current.dictation ? textRef.current.trimEnd() : "", dictation: callbacks.current.dictation, routed: Boolean(callbacks.current.onDictationReady) };
       nativeSession.current = session;
       void session.ready.then(() => {
         if (!mounted.current) { if (!session.stopping) void api.stopSpeech(true).catch(() => undefined); return; }
@@ -274,6 +279,7 @@ export function useSpeech({ onPhaseChange, onSpeechReady, language = "en-US", di
   const startListening = useCallback(async () => {
     if (!native || callbacks.current.testing || continuousId.current || continuousStarting.current) return;
     continuousStarting.current = true;
+    const routeDictation = Boolean(callbacks.current.onDictationReady);
     const id = crypto.randomUUID(); continuousId.current = id;
     changePhase("starting"); setMessage("Opening your microphone for continuous listening...");
     try {
@@ -296,7 +302,7 @@ export function useSpeech({ onPhaseChange, onSpeechReady, language = "en-US", di
           const command = result.text.trim().toLowerCase().replace(/[.!?]+$/, "");
           if (["stop listening", "pause listening", "microphone off"].includes(command)) { await pauseListening(); return; }
           if (result.needs_review || result.insertion_error) { setMessage(result.insertion_error || "Unclear speech retained for review. Listening continues."); return; }
-          if (callbacks.current.dictation) { setMessage(result.inserted ? "Text inserted. Listening continues." : "Transcript ready. Listening continues."); return; }
+          if (callbacks.current.dictation) { if (routeDictation) await callbacks.current.onDictationReady?.(clean); setMessage(result.inserted ? "Text inserted. Listening continues." : "Transcript ready. Listening continues."); return; }
           try { await callbacks.current.onSpeechReady?.(clean); if (continuousId.current === id) setMessage("Command processed. Listening for your next sentence."); }
           catch (error) { if (continuousId.current === id) setMessage(`Heard: ${result.text}. ${String(error)}`); }
         }).catch(error => { if (continuousId.current === id) setMessage(String(error)); });
@@ -308,7 +314,7 @@ export function useSpeech({ onPhaseChange, onSpeechReady, language = "en-US", di
       });
       listeners.current.push(onEnd);
       if (continuousId.current !== id || !mounted.current) { listeners.current.splice(0).forEach(unlisten => unlisten()); return; }
-      await api.startListening(id, callbacks.current.dictation, {deviceId: callbacks.current.deviceId, language: callbacks.current.nativeLanguage, ...{sensitivity: callbacks.current.sensitivity, silenceMs: callbacks.current.silenceMs}});
+      await api.startListening(id, callbacks.current.dictation, {deviceId: callbacks.current.deviceId, language: callbacks.current.nativeLanguage, ...{sensitivity: callbacks.current.sensitivity, silenceMs: callbacks.current.silenceMs, deferInsertion: routeDictation}});
       if (continuousId.current !== id || !mounted.current) { await api.stopListening(); return; }
       setPermission("enabled"); setContinuous(true); changePhase("listening"); setMessage("Listening continuously. Speak a command, then pause briefly. Say pause listening to switch the microphone off.");
     } catch (error) {

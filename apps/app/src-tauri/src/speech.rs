@@ -14,6 +14,7 @@ pub struct Options {
     pub language: String,
     pub sensitivity: u32,
     pub silence_ms: u32,
+    pub defer_insertion: bool,
 }
 impl Default for Options {
     fn default() -> Self {
@@ -22,6 +23,7 @@ impl Default for Options {
             language: "en".into(),
             sensitivity: 50,
             silence_ms: 1500,
+            defer_insertion: false,
         }
     }
 }
@@ -129,7 +131,7 @@ impl SpeechCapture {
                     .into(),
             );
         }
-        let target = if dictation {
+        let target = if dictation && !options.defer_insertion {
             let target = crate::platform::foreground_target();
             if target.0 == 0 || target.1 == std::process::id() {
                 return Err(
@@ -348,7 +350,7 @@ pub fn start_listening(
             if decoder_cancel.load(Ordering::SeqCst) {
                 break;
             }
-            let target = if dictation {
+            let target = if dictation && !options.defer_insertion {
                 Some(crate::platform::foreground_target())
             } else {
                 None
@@ -414,6 +416,14 @@ mod tests {
             .start(false, Options::default(), test_runtime())
             .unwrap();
         assert!(capture.stop(true).unwrap().text.is_empty());
+    }
+    #[test]
+    fn dictation_insertion_deferral_is_explicit_and_backward_compatible() {
+        let legacy: Options = serde_json::from_str(r#"{"language":"en"}"#).unwrap();
+        assert!(!legacy.defer_insertion);
+        let routed: Options =
+            serde_json::from_str(r#"{"language":"en","deferInsertion":true}"#).unwrap();
+        assert!(routed.defer_insertion);
     }
     #[test]
     fn stopping_without_capture_returns_error() {
