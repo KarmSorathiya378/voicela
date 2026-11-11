@@ -1,6 +1,6 @@
 # Dependable workflows
 
-WorkflowPanel saves named local commands/notes and reusable event/message routines. Event creation runs before sending the email. Saved notes are never interpreted as executable instructions. Each execution obtains fresh native previews and requires approval of every exact action, with an explicit real/sandbox mode.
+WorkflowPanel is mounted in the desktop workspace and saves named local commands/notes and reusable event/message routines. Event creation runs before sending the email. Saved notes are never interpreted as executable instructions. Each execution obtains fresh native previews and requires approval of every exact action, with an explicit real/sandbox mode. Real Google operations also require the default-off Google privacy setting. Unavailable persistent storage cannot fall back to a volatile journal: writes fail closed.
 
 WorkflowRunner journals intent before invoking a step and persists receipts before verification. A recorded execution key cannot run again, including after runner recreation/restart. Native Google SQLite guards additionally atomically reject duplicate action content across processes/windows and new frontend execution IDs. Frontend localStorage alone is not a cross-process lock. Storage failure before execution prevents writes.
 

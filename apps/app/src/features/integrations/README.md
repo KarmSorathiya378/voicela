@@ -1,16 +1,16 @@
 # Gmail and Google Calendar
 
-Real mode invokes native Rust commands registered by the desktop shell. Sandbox mode uses native validation and single-use previews, returns a simulated receipt and never accesses tokens or Google APIs. GooglePanel connects/disconnects and executes one reviewed action; WorkflowPanel saves and executes Calendar-then-Gmail routines. The shell owner must mount both exported panels.
+Real mode invokes native Rust commands registered by the desktop shell. Sandbox mode uses native validation and single-use previews, returns a simulated receipt and never accesses tokens or Google APIs. GooglePanel connects/disconnects and executes one reviewed action; WorkflowPanel saves and executes Calendar-then-Gmail routines. Both panels are mounted in the desktop workspace.
 
 ## Connect a real account
 
 1. In Google Cloud, enable Gmail API and Google Calendar API. Configure the OAuth consent screen and add the account as a test user when the application is in testing.
-2. Create an OAuth client of type Desktop app. Enter its client ID and client secret in GooglePanel, select Real Google account and Connect Google. Do not put credentials in repository files or browser storage.
+2. Create an OAuth client of type Desktop app. Enable Google in the app's privacy settings (disabled by default). Enter its client ID and client secret in GooglePanel, select Real Google account and Connect Google. Do not put credentials in repository files or browser storage.
 3. Consent in the system browser. Native Rust uses authorization code + S256 PKCE, random state, an ephemeral 127.0.0.1 callback port and a 120-second deadline. Scopes are only gmail.send and calendar.events.owned. Contacts, mailbox reading and calendar attendees are unsupported.
 4. Save/review a routine, select real mode and approve the exact immutable recipient, subject/body and/or event title/start/end. Enter a single full ASCII email address. Natural contact names, recipient lists, header injection, natural dates, missing/unknown offsets, invalid dates and non-increasing event intervals are rejected. Whole-second RFC3339 with an explicit UTC offset is required; users must resolve DST ambiguity explicitly.
 5. Disconnect deletes Windows Credential Manager credentials before attempting Google revocation. Failed remote revocation is reported with account-settings recovery instructions. Disconnect invalidates outstanding previews and preserves execution guards.
 
-Refresh tokens and client configuration are stored only in the Windows-native keyring. Access tokens remain in native request memory, never returned to JavaScript. Tokens/provider response bodies are not logged. Refresh failures require reconnect. OAuth/confirm/disconnect are serialized; preview contents cannot be changed after review. Preview IDs are single-use, expire in five minutes, and outstanding previews are bounded.
+Refresh tokens and client configuration are stored only in the Windows-native keyring. Access tokens remain in native request memory, never returned to JavaScript. Tokens/provider response bodies are not logged. Refresh failures require reconnect. OAuth/confirm/disconnect are serialized; preview contents cannot be changed after review. Preview IDs are single-use, expire in five minutes, and outstanding previews are bounded. Native privacy gates protect connection, real previews and confirmation, with a fresh check before claiming a write; sandbox and disconnect remain available when Google is disabled.
 
 ## Execution guarantees and limits
 
