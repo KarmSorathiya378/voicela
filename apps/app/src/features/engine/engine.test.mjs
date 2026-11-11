@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseIntent, intentExamples } from './parser.ts';
+import { parseIntent, intentExamples, classifyIntent } from './parser.ts';
 import { IntentEngine } from './planner.ts';
 
 const simulated = request => ({ status: 'simulated', output: { tool: request.tool, executed: false, status: 'simulated', message: 'Simulated. No action executed.' } });
@@ -216,4 +216,143 @@ test('continuous turns execute and voice approval works without stopping the ses
  await engine.handleListeningTurn('Create note Test: More');
  await engine.handleListeningTurn('cancel plan');
  assert.equal(engine.getSnapshot().plan.status, 'cancelled');
+});
+
+
+test('meaning-aware routes distinguish content, edits, questions and actions', () => {
+  for (const [text, route] of [
+    ['Could you please get Calculator running?', 'action'],
+    ['Where is my invoice.pdf?', 'action'],
+    ['I need you to look online for train times', 'action'],
+    ['Dictate Please open Notepad', 'dictation'],
+    ['Type Why should I open Notepad?', 'dictation'],
+    ['Make this shorter', 'editing'], ['Undo', 'editing'],
+    ['I think we should open a window.', 'dictation'], ['Where is Paris?', 'question'], ['How do I open Notepad?', 'question'], ['Can Notepad open PDFs?', 'question'],
+  ]) assert.equal(classifyIntent(text), route, text);
+  assert.equal(parseIntent('Could you get Calculator running?').actions[0].request.input.app, 'Calculator');
+  assert.deepEqual(parseIntent('Where is my invoice.pdf?').actions[0].request, { tool: 'find_file', input: { query: 'invoice.pdf' } });
+  assert.equal(parseIntent('How do I open Notepad?').supported, false);
+  assert.equal(parseIntent('Dictate Please open Notepad').actions[0].request.input.target, 'Please open Notepad');
+  assert.equal(parseIntent('Compose a message to Maya saying Open Notepad').actions[0].request.input.body, 'Open Notepad');
+});
+
+test('missing details ask questions and never stage partial sequences', async () => {
+  const { engine, calls } = fixture();
+  for (const text of ['Find a file', 'Open an app', 'Draft a message', 'Create a note', 'Search the web for', 'Make this shorter', 'use the other file']) {
+    const parsed = parseIntent(text);
+    assert.equal(parsed.supported, false, text);
+    assert.equal(parsed.clarification, true, text);
+    assert.match(parsed.message, /\?/);
+    assert.equal(engine.submitTranscript(text), false);
+  }
+  assert.equal(engine.submitTranscript('find invoice then draft a message'), false);
+  assert.equal(engine.getSnapshot().plan, null);
+  assert.equal(calls.length, 0);
+  assert.equal(engine.submitTranscript('Draft message to Maya saying Hello'), true);
+});
+
+test('other file resolves only two explicit prior filenames, never result prose', async () => {
+  const { engine, calls } = fixture();
+  engine.submitTranscript('find invoice.pdf then find report.pdf');
+  await engine.run();
+  assert.ok(engine.submitTranscript('use the other file'));
+  assert.equal(engine.getSnapshot().plan.steps[0].request.input.query, 'invoice.pdf');
+  assert.equal(calls.filter(call => call[0] === 'run').length, 2);
+  assert.equal(parseIntent('use the other file', { requests: [{ tool: 'find_file', input: { query: 'invoice' } }] }).supported, false);
+  assert.equal(parseIntent('open the other file', { requests: [{ tool: 'find_file', input: { query: 'a' } }, { tool: 'find_file', input: { query: 'b' } }] }).supported, false);
+});
+
+test('tomorrow retains explicit timezone and overnight duration with a fixed clock', () => {
+  const request = { tool: 'calendar_event', input: { title: 'Review', start: '2026-11-11T23:30:00+05:30', end: '2026-11-12T00:30:00+05:30' } };
+  const result = parseIntent('change that to tomorrow', { requests: [request], now: new Date('2026-12-31T20:00:00Z') });
+  assert.equal(result.supported, true);
+  assert.deepEqual(result.actions[0].request.input, { title: 'Review', start: '2027-01-02T23:30:00+05:30', end: '2027-01-03T00:30:00+05:30' });
+  assert.equal(parseIntent('change that to tomorrow').supported, false);
+  assert.equal(parseIntent('change that to tomorrow', { requests: [request, request] }).supported, false);
+});
+
+test('ready follow-up restages without execution and completed events are not duplicated', async () => {
+  const { engine, calls } = fixture();
+  engine.submitTranscript(intentExamples[5]);
+  assert.ok(engine.submitTranscript('change that to tomorrow'));
+  assert.equal(engine.getSnapshot().plan.status, 'ready');
+  assert.equal(calls.length, 0);
+  await engine.run(); await engine.approve();
+  assert.equal(engine.submitTranscript('change that to tomorrow'), false);
+  assert.match(engine.getSnapshot().notice, /cannot edit/);
+});
+
+test('cancel that denies pending approval and never acts on content containing cancel', async () => {
+  const { engine, calls } = fixture();
+  await engine.executeSpoken('Create note Test: cancel that');
+  assert.equal(engine.getSnapshot().plan.status, 'awaiting-approval');
+  await engine.handleListeningTurn('cancel that');
+  assert.equal(engine.getSnapshot().plan.status, 'cancelled');
+  assert.deepEqual(calls.filter(call => call[0] === 'approval'), [['approval', 'bound-request', false]]);
+  assert.equal(engine.submitTranscript('cancel that'), true);
+});
+
+test('cancel that during IPC waits and prevents the next request', async () => {
+  const { engine, client, calls } = fixture();
+  let finish;
+  client.runTool = request => { calls.push(['run', request]); return new Promise(resolve => { finish = () => resolve(executed(request)); }); };
+  engine.submitTranscript('find invoice then find report');
+  const running = engine.run();
+  while (!finish) await new Promise(resolve => setImmediate(resolve));
+  await engine.handleListeningTurn('cancel that');
+  finish(); await running;
+  assert.equal(engine.getSnapshot().plan.status, 'cancelled');
+  assert.equal(calls.filter(call => call[0] === 'run').length, 1);
+});
+
+test('field validation rejects invalid clocks and control characters atomically', () => {
+  for (const text of [
+    'Open Notepad\u0000',
+    'Prepare event Review from 2026-11-11T24:00:00Z to 2026-11-13T10:00:00Z',
+    'Draft message to someone saying Hello',
+  ]) assert.equal(parseIntent(text).supported, false, text);
+});
+
+
+test('captured literal pronouns remain content while unresolved identifiers ask', () => {
+  assert.equal(parseIntent('Draft message to Maya saying it').actions[0].request.input.body, 'it');
+  assert.equal(parseIntent('Type that').actions[0].request.input.target, 'that');
+  assert.equal(parseIntent('Open it').clarification, true);
+});
+
+test('pending approval follow-up cannot revise or approve the native request', async () => {
+  const { engine, calls } = fixture();
+  await engine.executeSpoken(intentExamples[5]);
+  const approval = engine.getSnapshot().plan.approval;
+  assert.equal(engine.submitTranscript('change that to tomorrow'), false);
+  assert.deepEqual(engine.getSnapshot().plan.approval, approval);
+  assert.equal(calls.filter(call => call[0] === 'approval').length, 0);
+});
+
+test('cancel during an in-flight request reconciles a newly returned native approval', async () => {
+  const { engine, client, calls } = fixture();
+  const original = client.runTool;
+  let finish;
+  client.runTool = (request, intent) => new Promise(resolve => { finish = async () => resolve(await original(request, intent)); });
+  engine.submitTranscript('Create note Test: Hello then find invoice');
+  const running = engine.run();
+  while (!finish) await new Promise(resolve => setImmediate(resolve));
+  await engine.handleListeningTurn('cancel that');
+  await finish(); await running;
+  assert.equal(engine.getSnapshot().plan.status, 'cancelled');
+  assert.deepEqual(calls.filter(call => call[0] === 'approval'), [['approval', 'bound-request', false]]);
+  assert.equal(calls.filter(call => call[0] === 'run').length, 1);
+});
+
+
+test('dictation keeps sequencing words and tool names as literal content', () => {
+  for (const text of ['Type Review the calendar event', 'Dictate hello then open Notepad']) {
+    const parsed = parseIntent(text);
+    assert.equal(parsed.supported, true);
+    assert.equal(parsed.actions.length, 1);
+    assert.equal(parsed.actions[0].request.input.action, 'type');
+  }
+  assert.equal(parseIntent('Dictate hello then open Notepad').actions[0].request.input.target, 'hello then open Notepad');
+  assert.equal(parseIntent('Open Calendar').actions[0].request.input.app, 'Calendar');
+  assert.equal(parseIntent('Find event notes').actions[0].request.input.query, 'event notes');
 });

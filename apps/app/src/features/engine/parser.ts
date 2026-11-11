@@ -1,9 +1,12 @@
 import type { ToolInput } from "../../api";
+import { classifyIntent, normalizeRequest, missingDetails, resolveFollowUp, validateRequest } from "./understanding.ts";
+import type { IntentRoute, IntentContext } from "./understanding.ts";
+export { classifyIntent } from "./understanding.ts";
 
 export interface IntentAction { instruction: string; request: ToolInput }
 export type ParsedIntent =
-  | { supported: true; transcript: string; actions: IntentAction[] }
-  | { supported: false; message: string };
+  | { supported: true; transcript: string; actions: IntentAction[]; route: IntentRoute }
+  | { supported: false; message: string; route?: IntentRoute; clarification?: true; cancel?: true };
 
 export const supportedInstructions = "I can open installed Windows apps, save local notes, search accessible local drives, search the web, inspect app controls, click, type, scroll, and use common shortcuts in apps. Calendar and messaging integrations are previews.";
 export const intentExamples = [
@@ -16,23 +19,30 @@ export const intentExamples = [
 ];
 
 const unsupported = (message: string): ParsedIntent => ({ supported: false, message });
-const timestamp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?(?:Z|[+-]\d{2}:\d{2})$/;
-function validDate(value: string): boolean {
-  if (!timestamp.test(value) || !Number.isFinite(Date.parse(value))) return false;
-  const day = value.slice(0, 10);
-  return new Date(`${day}T00:00:00Z`).toISOString().startsWith(day);
-}
-
 /** Entire sequences are validated before any action is offered to the executor. */
-export function parseIntent(raw: string): ParsedIntent {
+export function parseIntent(raw: string, context?: IntentContext): ParsedIntent {
   const transcript = raw.trim();
   if (!transcript) return unsupported("Enter an instruction first.");
   if (new TextEncoder().encode(transcript).length > 2048) return unsupported("Keep your instruction within 2,048 bytes. Split a longer request into smaller plans.");
-  const clauses = transcript.split(/\s+(?:and\s+)?then\s+/i);
+  if (/^(?:cancel that|cancel|cancel plan|decline|no cancel)[.!?]?$/i.test(transcript)) return { supported: false, cancel: true, message: "Cancel the current plan; returned actions cannot be undone." };
+  const followUp = resolveFollowUp(transcript, context);
+  if (typeof followUp === "string") return { supported: false, clarification: true, message: followUp };
+  if (followUp) {
+    const error = validateRequest(followUp);
+    if (error) return { supported: false, clarification: true, message: error };
+    return { supported: true, transcript, route: "action", actions: [{ instruction: transcript, request: followUp }] };
+  }
+  const route = classifyIntent(transcript);
+  if (route === "question") return { supported: false, route, clarification: true, message: "This is a question. I cannot answer it locally. Would you like a web search? Say: Search the web for YOUR QUERY." };
+  if (route === "editing" && /^(?:replace|rewrite|rephrase|correct|make|change)\b/i.test(normalizeRequest(transcript))) return { supported: false, route, clarification: true, message: "What exact text should change, and what replacement should I use? I cannot infer the selected text. You can type the replacement explicitly." };
+  if (route === "dictation" && !/^(?:dictate|take dictation|type|write text)\b/i.test(normalizeRequest(transcript))) return { supported: false, route, clarification: true, message: "Would you like me to type this exact text? Say Dictate followed by the text to insert." };
+  const clauses = route === "dictation" ? [transcript] : transcript.split(/\s+(?:and\s+)?then\s+/i);
   if (clauses.length > 8) return unsupported("Use at most eight steps in one plan.");
   const actions: IntentAction[] = [];
   for (const original of clauses) {
-    const instruction = original.trim().replace(/^(?:can|could|would) you\s+/i, "").replace(/^please\s+/i, "");
+    const instruction = normalizeRequest(original).replace(/^(?:dictate|take dictation)\s+/i, "type ");
+    const missing = missingDetails(instruction);
+    if (missing && /^(?:find|locate|open|launch|type|write text|search)\b/i.test(instruction)) return { supported: false, route, clarification: true, message: missing };
     let match: RegExpMatchArray | null;
     let request: ToolInput;
     if (/^(?:send|delete|remove|purchase|buy|share|change permissions)\b/i.test(instruction)) {
@@ -64,25 +74,15 @@ export function parseIntent(raw: string): ParsedIntent {
       request = { tool: "browser_search", input: { query: match[1].trim() } };
     } else if ((match = instruction.match(/^(?:prepare|create|schedule)(?:\s+a)?\s+(?:calendar\s+)?event\s+(.+?)\s+from\s+(\S+)\s+to\s+(\S+)$/i))) {
       const [, title, start, end] = match;
-      if (!validDate(start) || !validDate(end) || Date.parse(end) <= Date.parse(start)) {
-        return unsupported("Use valid ISO dates with time zones and an end after the start, for example 2026-11-11T10:00:00+05:30. No steps have run.");
-      }
       request = { tool: "calendar_event", input: { title: title.trim(), start, end } };
-    } else if (/^draft\b/i.test(instruction)) {
-      return unsupported('Add the recipient and message, for example “Draft message to Maya saying I will be there at five”. No steps have run.');
-    } else if (/^(?:create|make)\b.*\bnote\b/i.test(instruction)) {
-      return unsupported('Add a title and body, for example “Create a note titled Shopping saying buy milk”. No steps have run.');
-    } else if (/\b(?:calendar|event)\b/i.test(instruction)) {
-      return unsupported(`Give an event title, start and end with time zones. Example: “${intentExamples[5]}”. No steps have run.`);
+    } else if (missing) {
+      return { supported: false, route, clarification: true, message: missing };
     } else {
       return unsupported(`I can't do that yet. ${supportedInstructions} Join explicit steps with “then”. No steps have run.`);
     }
-    if (Object.values(request.input).some(value => !value.trim())) return unsupported("Each step needs complete details. No steps have run.");
-    // Do not resolve references using invented results from a previous step.
-    if (Object.values(request.input).some(value => /^(?:it|that|them|the result|those)$/i.test(value))) {
-      return unsupported("Name the exact app, file, recipient or content for each step. References to earlier results are not supported yet. No steps have run.");
-    }
+    const error = validateRequest(request);
+    if (error) return { supported: false, route, clarification: true, message: error };
     actions.push({ instruction: original.trim(), request });
   }
-  return { supported: true, transcript, actions };
+  return { supported: true, transcript, actions, route };
 }

@@ -45,7 +45,7 @@ export function EnginePanel({ engine }: { engine: IntentEngineBinding }) {
     </> : <p className="empty">Say an app command to run it, or submit typed text to prepare a plan.</p>}
     <details><summary>Supported instructions</summary><p>{supportedInstructions}</p>
       <ul>{intentExamples.map(example => <li key={example}>{example}</li>)}</ul>
-      <p>Join up to eight independent steps with “then”. Include exact details for every step; references to earlier results are not supported. For message or note text containing “then”, submit separate plans.</p>
+      <p>Join up to eight independent steps with “then”. Include exact details for every step. Follow-ups can revise an unstarted event or select between two previously searched filenames. Ambiguous references ask for details. For message or note text containing “then”, submit separate plans.</p>
     </details>
     <details open={audit.length > 0}><summary>Plan audit ({audit.length})</summary>
       <p className="hint">This window keeps the latest 60 planner events. The desktop activity feed stores core approval and tool records in SQLite.</p>

@@ -1,5 +1,6 @@
 import type { AppState, PendingApproval, RunResponse, StateSnapshot, ToolInput } from "../../api";
 import { parseIntent } from "./parser.ts";
+import { validateRequest } from "./understanding.ts";
 
 export interface EngineClient {
   getState(): Promise<StateSnapshot>;
@@ -29,6 +30,7 @@ export class IntentEngine {
   private listeners = new Set<() => void>();
   private view: EngineView = { plan: null, notice: "", busy: false, audit: [] };
   private stopRequested = false;
+  private cancelRequested = false;
   private sequence = 0;
   constructor(client: EngineClient) { this.client = client; }
   getSnapshot = (): EngineView => this.view;
@@ -64,16 +66,25 @@ export class IntentEngine {
     this.update({ busy: true });
     try { this.recover(await this.client.getState()); }
     catch (error) { this.update({ notice: `Desktop connection unavailable: ${String(error)}. No action was executed.` }); }
-    finally { this.update({ busy: false }); }
+    finally { await this.finishOperation(); }
   }
   /** Stages a visible plan; execution requires Run plan. Returns false when not accepted. */
   submitTranscript = (transcript: string): boolean => {
     const current = this.view.plan;
-    if (this.view.busy || current && !["completed", "cancelled"].includes(current.status)) {
+    if (/^(?:cancel that|cancel|cancel plan|decline|no cancel)[.!?]?$/i.test(transcript.trim())) {
+      void this.cancel();
+      return true;
+    }
+    const followUp = /^(?:(?:use|find|open) the other file|(?:change|move|reschedule) (?:that|it) to tomorrow)[.!?]?$/i.test(transcript.trim());
+    if (this.view.busy || current && !["completed", "cancelled"].includes(current.status) && !(followUp && current.status === "ready")) {
       this.update({ notice: "Finish or cancel the current plan before submitting another instruction." });
       return false;
     }
-    const parsed = parseIntent(transcript);
+    const parsed = parseIntent(transcript, current && current.status !== "cancelled" ? { requests: current.steps.map(step => step.request) } : undefined);
+    if (followUp && current?.status === "completed" && parsed.supported && parsed.actions.some(action => action.request.tool === "calendar_event")) {
+      this.update({ notice: "The previous event preview has already returned. I cannot edit an existing event. Should I prepare a new event? Give its title and exact start and end timestamps." });
+      return false;
+    }
     if (!parsed.supported) { this.update({ notice: parsed.message }); this.audit(`Instruction not accepted: ${parsed.message}`); return false; }
     this.stopRequested = false;
     this.update({ notice: "Review the steps, then run the plan.",
@@ -89,7 +100,7 @@ export class IntentEngine {
       if (this.view.plan?.status !== "awaiting-approval") throw new Error("There is no request waiting for approval.");
       await this.approve(); return;
     }
-    if (["cancel", "cancel plan", "decline", "no cancel"].includes(command)) { await this.cancel(); return; }
+    if (["cancel", "cancel that", "cancel plan", "decline", "no cancel"].includes(command)) { await this.cancel(); return; }
     await this.executeSpoken(utterance);
   };
   /** Speech is itself the run gesture; normal tool permissions still apply in Rust. */
@@ -108,6 +119,8 @@ export class IntentEngine {
   run = async (): Promise<void> => {
     const plan = this.view.plan;
     if (this.view.busy || !plan || !["ready", "paused"].includes(plan.status)) return;
+    const invalid = plan.steps.map(step => validateRequest(step.request)).find(Boolean);
+    if (invalid) { this.update({ notice: invalid }); return; }
     this.stopRequested = false;
     if (plan.approval) { this.plan({ status: "awaiting-approval" }); this.update({ notice: "Review the pending request. Resume does not approve it." }); return; }
     this.update({ busy: true, notice: "" });
@@ -119,7 +132,7 @@ export class IntentEngine {
       await this.client.setState("thinking");
       await this.advance();
     } catch (error) { this.fail(error); }
-    finally { this.update({ busy: false }); }
+    finally { await this.finishOperation(); }
   };
   private async advance(): Promise<void> {
     while (!this.stopRequested) {
@@ -177,10 +190,15 @@ export class IntentEngine {
       const response = await this.client.approveTool(id, true);
       if (this.handle(index, response)) await this.advance();
     } catch (error) { this.fail(error); }
-    finally { this.update({ busy: false }); }
+    finally { await this.finishOperation(); }
   };
   cancel = async (): Promise<void> => {
-    if (this.view.busy || !this.view.plan || this.view.plan.status === "completed" || this.view.plan.status === "cancelled") return;
+    if (this.view.busy && this.view.plan) {
+      this.cancelRequested = true;
+      this.stop();
+      return;
+    }
+    if (!this.view.plan || this.view.plan.status === "completed" || this.view.plan.status === "cancelled") return;
     if (this.view.plan.status === "ready") {
       this.plan({ status: "cancelled", steps: this.cancelledSteps() });
       this.update({ notice: "Unstarted plan cancelled. No tool request was submitted." });
@@ -201,8 +219,15 @@ export class IntentEngine {
       this.update({ notice: "Remaining steps cancelled. Earlier returned results stay in the audit trail." });
       this.audit("Plan cancelled; remaining steps will not run.");
     } catch (error) { this.fail(error); }
-    finally { this.update({ busy: false }); }
+    finally { await this.finishOperation(); }
   };
+  private async finishOperation(): Promise<void> {
+    this.update({ busy: false });
+    if (this.cancelRequested) {
+      this.cancelRequested = false;
+      await this.cancel();
+    }
+  }
   private fail(error: unknown) {
     const message = `Desktop request failed: ${String(error)}. No success is assumed. Inspect activity or cancel before making a new plan; this step will not be retried automatically.`;
     const index = this.view.plan?.steps.findIndex(step => step.status === "running" || step.status === "awaiting-approval") ?? -1;
